@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memory Training Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #141417;
+            --bg-tertiary: #1c1c21;
+            --bg-hover: #252529;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-muted: #6e6e73;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: #2d2d32;
+            --border-light: #3d3d42;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        #root {
+            min-height: 100vh;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback } = React;
+
+        // ============ DATA ============
+        const traineeData = [
+            { tnumber: "T005", name: "Maximillian Delavega Adiwinata Frenat", jurusan: "Cyber Security", img: "/T005.png", angkatan: "B28" },
+            { tnumber: "T010", name: "Marcelino Rosselo Sungkono", jurusan: "Computer Science", img: "/T010.png", angkatan: "B28" },
+            { tnumber: "T022", name: "Clevant Joe Hizkia", jurusan: "Computer Science and Mathematics", img: "/T022.png", angkatan: "B29" },
+            { tnumber: "T030", name: "Wu Jeremmy Iskandar", jurusan: "Data Science", img: "/T030.png", angkatan: "B29" },
+            { tnumber: "T042", name: "Jason Kenneth Lay", jurusan: "Artificial Intelligence", img: "/T042.png", angkatan: "B29" },
+            { tnumber: "T044", name: "Wilson Arlando", jurusan: "Computer Science and Mathematics", img: "/T044.png", angkatan: "B29" },
+            { tnumber: "T054", name: "Muhammad Jibran Aulia Ramadhan", jurusan: "Data Science", img: "/T054.png", angkatan: "B29" },
+            { tnumber: "T078", name: "Elbert Joan", jurusan: "Artificial Intelligence", img: "/T078.png", angkatan: "B29" },
+            { tnumber: "T083", name: "Felisha Yang", jurusan: "Data Science", img: "/T083.png", angkatan: "B29" },
+            { tnumber: "T088", name: "Nicholas Anthony Hernando Gan", jurusan: "Computer Science", img: "/T088.png", angkatan: "B29" },
+            { tnumber: "T101", name: "Michael Arthara Immanuel", jurusan: "Artificial Intelligence", img: "/T101.png", angkatan: "B29" },
+            { tnumber: "T110", name: "Alfred Abner", jurusan: "Computer Science", img: "/T110.png", angkatan: "B29" },
+            { tnumber: "T113", name: "Bryan O'neill Alim", jurusan: "Computer Science", img: "/T113.png", angkatan: "B29" },
+            { tnumber: "T126", name: "Evan Satyadharma Gunardi", jurusan: "Artificial Intelligence", img: "/T126.png", angkatan: "B29" },
+            { tnumber: "T133", name: "Keane Wilson Prakoso", jurusan: "Computer Science", img: "/T133.png", angkatan: "B29" },
+            { tnumber: "T134", name: "Archie Ricardo", jurusan: "Computer Science and Mathematics", img: "/T134.png", angkatan: "B29" },
+            { tnumber: "T141", name: "Aaron Christian", jurusan: "Artificial Intelligence", img: "/T141.png", angkatan: "B29" },
+            { tnumber: "T153", name: "I Wayan Sudana Dyaksa", jurusan: "Computer Science", img: "/T153.png", angkatan: "B29" },
+            { tnumber: "T155", name: "Moses Joshua Lesmana", jurusan: "Computer Science (MT)", img: "/T155.png", angkatan: "B29" },
+            { tnumber: "T168", name: "Nazkia Najidah Ramdani", jurusan: "Data Science", img: "/T168.png", angkatan: "B29" }
+        ];
+
+        const trainerData = {
+            "25-2": [
+                { name: "Gavin Justine", img: "/GJ25-2.png", initial: "GJ25-2", position: "Junior Laboratory Assistant" },
+                { name: "Hans Kartawinata", img: "/HK25-2.png", initial: "HK25-2", position: "Junior Laboratory Assistant" },
+                { name: "Jordan Grant", img: "/OG25-2.png", initial: "OG25-2", position: "Junior Laboratory Assistant" },
+                { name: "Ryan Hazzel Chandra", img: "/RZ25-2.png", initial: "RZ25-2", position: "Junior Laboratory Assistant" }
+            ],
+            "25-1": [
+                { name: "Nathanael Moses", img: "/ES25-1.png", initial: "ES25-1", position: "Laboratory Assistant" },
+                { name: "Evorius Valens Taruna", img: "/EV25-1.png", initial: "EV25-1", position: "Laboratory Assistant" },
+                { name: "Rafael Febrian", img: "/FB25-1.png", initial: "FB25-1", position: "Laboratory Assistant" },
+                { name: "Daniel Regis Febrianto", img: "/GS25-1.png", initial: "GS25-1", position: "Laboratory Assistant" },
+                { name: "Ivy Nikita Malvin", img: "/IV25-1.png", initial: "IV25-1", position: "Laboratory Assistant" },
+                { name: "Sisilia Annabel Aileen", img: "/IL25-1.png", initial: "IL25-1", position: "Laboratory Assistant" },
+                { name: "Kenneth Maximillian Pranata", img: "/MX25-1.png", initial: "MX25-1", position: "Laboratory Assistant" },
+                { name: "Jonathan Christian Wongso", img: "/NG25-1.png", initial: "NG25-1", position: "Laboratory Assistant" },
+                { name: "Sean Spencer", img: "/NP25-1.png", initial: "NP25-1", position: "Laboratory Assistant" },
+                { name: "Alin Lorensia", img: "/OI25-1.png", initial: "OI25-1", position: "Laboratory Assistant" },
+                { name: "Marcell Sutiono", img: "/RL25-1.png", initial: "RL25-1", position: "Laboratory Assistant" },
+                { name: "Weneville", img: "/WE25-1.png", initial: "WE25-1", position: "Laboratory Assistant" }
+            ],
+            "24-2": [
+                { name: "Aldric Tan", img: "/AC24-2.png", initial: "AC24-2", position: "Laboratory Assistant" },
+                { name: "Helena Aurelia Sanjaya", img: "/AS24-2.png", initial: "AS24-2", position: "Operations Management Officer" },
+                { name: "Brenda Calista Haryanto", img: "/BD24-2.png", initial: "BD24-2", position: "Laboratory Assistant" },
+                { name: "Bertrand Geraldo Tjahyadi", img: "/BT24-2.png", initial: "BT24-2", position: "Laboratory Assistant" },
+                { name: "Celine Tan", img: "/CT24-2.png", initial: "CT24-2", position: "Laboratory Assistant" },
+                { name: "Fortino", img: "/FO24-2.png", initial: "FO24-2", position: "Laboratory Assistant" },
+                { name: "Reinhart Gian", img: "/GN24-2.png", initial: "GN24-2", position: "Laboratory Assistant" },
+                { name: "Ni Komang Gayatri Kusuma Wardhani", img: "/GY24-2.png", initial: "GY24-2", position: "Laboratory Assistant" },
+                { name: "Steven Hardyanto", img: "/HO24-2.png", initial: "HO24-2", position: "Laboratory Assistant" },
+                { name: "Kevin Nathanael Hendarto", img: "/KH24-2.png", initial: "KH24-2", position: "Laboratory Assistant" },
+                { name: "Tommy Awada", img: "/MM24-2.png", initial: "MM24-2", position: "Laboratory Assistant" },
+                { name: "Marco Linardi", img: "/MR24-2.png", initial: "MR24-2", position: "Laboratory Assistant" },
+                { name: "Marvel Collin", img: "/MV24-2.png", initial: "MV24-2", position: "Research and Development Staff" },
+                { name: "Agnes Faustine Ilona Soejanto", img: "/NS24-2.png", initial: "NS24-2", position: "Laboratory Assistant" },
+                { name: "Octavius Sandriago", img: "/OV24-2.png", initial: "OV24-2", position: "Laboratory Assistant" },
+                { name: "Paul Tsai Adinata", img: "/PL24-2.png", initial: "PL24-2", position: "Subject Coordinator Staff" },
+                { name: "Ryuu Stanley Tistogondo", img: "/RU24-2.png", initial: "RU24-2", position: "Laboratory Assistant" },
+                { name: "Steven Taniardi", img: "/TI24-2.png", initial: "TI24-2", position: "Laboratory Assistant" },
+                { name: "Vincentius Devin Agung Oktara", img: "/VD24-2.png", initial: "VD24-2", position: "Laboratory Assistant" },
+                { name: "Veron Fujimori", img: "/VM24-2.png", initial: "VM24-2", position: "Laboratory Assistant" },
+                { name: "William Sebastian Liman", img: "/WS24-2.png", initial: "WS24-2", position: "Laboratory Assistant" },
+                { name: "Wilsen Wiratan", img: "/WW24-2.png", initial: "WW24-2", position: "Laboratory Assistant" },
+                { name: "Yudhistira", img: "/YD24-2.png", initial: "YD24-2", position: "Laboratory Assistant" }
+            ],
+            "24-1": [
+                { name: "Christian Dexter Fernando", img: "/CF24-1.png", initial: "CF24-1", position: "Network Administrator and Technical Support Staff" },
+                { name: "Jose Christian Wijaya", img: "/CW24-1.png", initial: "CW24-1", position: "Subject Coordinator Staff" },
+                { name: "Gilbert Jefferson", img: "/GT24-1.png", initial: "GT24-1", position: "Subject Coordinator Staff" },
+                { name: "Kenneth Andrew", img: "/KA24-1.png", initial: "KA24-1", position: "Laboratory Assistant" },
+                { name: "Kevin Pramudya Mahardika", img: "/KK24-1.png", initial: "KK24-1", position: "Subject Coordinator Staff" },
+                { name: "Muhammad Aryo Baskoro", img: "/KR24-1.png", initial: "KR24-1", position: "Subject Coordinator Staff" },
+                { name: "Nathanael Sjaklif", img: "/LF24-1.png", initial: "LF24-1", position: "Laboratory Assistant" },
+                { name: "Luciano Mathew Hinarta", img: "/LO24-1.png", initial: "LO24-1", position: "Laboratory Assistant" },
+                { name: "Marvella Viana Santoso", img: "/MS24-1.png", initial: "MS24-1", position: "Subject Coordinator Staff" },
+                { name: "Philip Purnama", img: "/PP24-1.png", initial: "PP24-1", position: "Laboratory Assistant" },
+                { name: "Michael Stefano Irawadi", img: "/SF24-1.png", initial: "SF24-1", position: "Laboratory Assistant" },
+                { name: "Steven Liementha", img: "/SV24-1.png", initial: "SV24-1", position: "Research and Development Staff" },
+                { name: "Vincent", img: "/VL24-1.png", initial: "VL24-1", position: "Laboratory Assistant" },
+                { name: "Vincentius Jonathan Tanujaya", img: "/VU24-1.png", initial: "VU24-1", position: "Network Administrator and Technical Support Staff" },
+                { name: "Xaviero Yamin Loganta", img: "/XY24-1.png", initial: "XY24-1", position: "Laboratory Assistant" },
+                { name: "Yenita Kimberly", img: "/YK24-1.png", initial: "YK24-1", position: "Subject Coordinator Staff" },
+                { name: "Inner Journey Tazkie Ciputra Tangguh", img: "/ZK24-1.png", initial: "ZK24-1", position: "Database Administration Staff" }
+            ],
+            "23-2": [
+                { name: "Adrian Yu", img: "/AY23-2.png", initial: "AY23-2", position: "Database Administration Staff" },
+                { name: "Jason Daniel Tanuarta", img: "/DT23-2.png", initial: "DT23-2", position: "Research and Development Staff" },
+                { name: "Frederick Yonathan Ehowu Mendrofa", img: "/FD23-2.png", initial: "FD23-2", position: "Laboratory Assistant" },
+                { name: "Hendra Hendarto", img: "/HH23-2.png", initial: "HH23-2", position: "Database Administration Staff" },
+                { name: "Jackson", img: "/JZ23-2.png", initial: "JZ23-2", position: "Network Administrator and Technical Support Staff" },
+                { name: "William Christian", img: "/LM23-2.png", initial: "LM23-2", position: "Research and Development Staff" },
+                { name: "Marvino Fransisco", img: "/MF23-2.png", initial: "MF23-2", position: "Laboratory Assistant" },
+                { name: "Michael Iskandardinata", img: "/MH23-2.png", initial: "MH23-2", position: "Network Administrator and Technical Support Staff" },
+                { name: "Daniel Adamlu", img: "/NL23-2.png", initial: "NL23-2", position: "Network Administrator and Technical Support Staff" },
+                { name: "Jonathan Maverick", img: "/VK23-2.png", initial: "VK23-2", position: "Subject Coordinator Staff" },
+                { name: "Vincent Ramaputra", img: "/VR23-2.png", initial: "VR23-2", position: "Laboratory Assistant" },
+                { name: "Axel Kurniawan", img: "/XK23-2.png", initial: "XK23-2", position: "Laboratory Assistant" }
+            ],
+            "23-1": [
+                { name: "Rico Aurelio Gunadi Sastra", img: "/IO23-1.png", initial: "IO23-1", position: "Network Administrator and Technical Support Staff" },
+                { name: "Terrance Dave Phoebus", img: "/PB23-1.png", initial: "PB23-1", position: "Network Administrator and Technical Support Staff" },
+                { name: "Nicholas Irvin Suhendi", img: "/IR23-1.png", initial: "IR23-1", position: "Database Administration Staff" },
+                { name: "Felix Gunawan Hendy", img: "/XD23-1.png", initial: "XD23-1", position: "Network Administrator and Technical Support Staff" },
+                { name: "Jovita Waisakhi", img: "/VI23-1.png", initial: "VI23-1", position: "Subject Coordinator Staff" }
+            ],
+            "22-2": [
+                { name: "Hans Indrawan Sucipto", img: "/HI22-2.png", initial: "HI22-2", position: "Network Administrator and Technical Support Staff" },
+                { name: "Valentino Setiawan", img: "/VS22-2.png", initial: "VS22-2", position: "Network Administrator and Technical Support Staff" },
+                { name: "Marchel Hermanliansyah", img: "/MC22-2.png", initial: "MC22-2", position: "Network Administrator and Technical Support Officer" },
+                { name: "Jason Ananda Cindra", img: "/JC22-2.png", initial: "JC22-2", position: "Laboratory Assistant" },
+                { name: "Jevon Danaristo", img: "/JO22-2.png", initial: "JO22-2", position: "Network Administrator and Technical Support Staff" }
+            ],
+            "22-1": [
+                { name: "Jeremy Loa", img: "/JM22-1.png", initial: "JM22-1", position: "Network Administrator and Technical Support Officer" },
+                { name: "Renaldi Addison", img: "/RE22-1.png", initial: "RE22-1", position: "Subject Coordinator Staff" }
+            ],
+            "20-1": [
+                { name: "Jonathan Adrian", img: "/JH20-1.png", initial: "JH20-1", position: "Operations Management Officer" }
+            ],
+            "19-2": [
+                { name: "Louis Choules", img: "/LH19-2.png", initial: "LH19-2", position: "Laboratory Assistant" }
+            ]
+        };
+
+        // ============ UTILITY FUNCTIONS ============
+        const shuffleArray = (array) => {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        };
+
+        const getAllTrainers = () => {
+            const all = [];
+            Object.entries(trainerData).forEach(([gen, trainers]) => {
+                trainers.forEach(t => all.push({ ...t, generation: gen }));
+            });
+            return all;
+        };
+
+        const getUniquePositions = () => {
+            const positions = new Set();
+            getAllTrainers().forEach(t => {
+                if (t.position) positions.add(t.position);
+            });
+            return Array.from(positions).sort();
+        };
+
+        const getUniqueJurusan = () => {
+            const jurusan = new Set();
+            traineeData.forEach(t => jurusan.add(t.jurusan));
+            return Array.from(jurusan).sort();
+        };
+
+        const normalizeText = (text) => {
+            return text.toLowerCase().trim().replace(/['']/g, "'");
+        };
+
+        // ============ STYLED COMPONENTS ============
+        const styles = {
+            container: {
+                maxWidth: '600px',
+                margin: '0 auto',
+                padding: '16px',
+                minHeight: '100vh',
+            },
+            header: {
+                textAlign: 'center',
+                padding: '24px 0',
+                borderBottom: '1px solid var(--border)',
+                marginBottom: '24px',
+            },
+            logo: {
+                width: '60px',
+                height: '60px',
+                borderRadius: '12px',
+                marginBottom: '12px',
+            },
+            title: {
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                marginBottom: '4px',
+                fontFamily: "'JetBrains Mono', monospace",
+            },
+            subtitle: {
+                color: 'var(--text-secondary)',
+                fontSize: '0.875rem',
+            },
+            card: {
+                background: 'var(--bg-secondary)',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '16px',
+                border: '1px solid var(--border)',
+            },
+            button: {
+                width: '100%',
+                padding: '14px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9375rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '8px',
+            },
+            buttonPrimary: {
+                background: 'var(--accent)',
+                color: 'white',
+            },
+            buttonSuccess: {
+                background: 'var(--success)',
+                color: 'white',
+            },
+            buttonError: {
+                background: 'var(--error)',
+                color: 'white',
+            },
+            input: {
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: '10px',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                fontSize: '1rem',
+                outline: 'none',
+                transition: 'border-color 0.2s ease',
+            },
+            select: {
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: '10px',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9375rem',
+                outline: 'none',
+                cursor: 'pointer',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 12px center',
+                backgroundSize: '20px',
+            },
+            personImage: {
+                width: '180px',
+                height: '180px',
+                borderRadius: '16px',
+                objectFit: 'cover',
+                margin: '0 auto 20px',
+                display: 'block',
+                border: '3px solid var(--border)',
+            },
+            tag: {
+                display: 'inline-block',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: '500',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-secondary)',
+                marginRight: '6px',
+                marginBottom: '6px',
+            },
+            progressBar: {
+                width: '100%',
+                height: '6px',
+                background: 'var(--bg-tertiary)',
+                borderRadius: '3px',
+                overflow: 'hidden',
+                marginBottom: '8px',
+            },
+            progressFill: {
+                height: '100%',
+                background: 'var(--accent)',
+                transition: 'width 0.3s ease',
+            },
+            scoreDisplay: {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px 16px',
+                background: 'var(--bg-tertiary)',
+                borderRadius: '10px',
+                marginBottom: '16px',
+            },
+            hintButton: {
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                color: 'var(--text-secondary)',
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+            },
+            hintText: {
+                padding: '12px 16px',
+                background: 'var(--bg-tertiary)',
+                borderRadius: '8px',
+                marginTop: '12px',
+                fontSize: '0.875rem',
+                color: 'var(--warning)',
+                fontFamily: "'JetBrains Mono', monospace",
+            },
+            backButton: {
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--text-secondary)',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+                marginBottom: '16px',
+            },
+            resultCard: {
+                textAlign: 'center',
+                padding: '32px 20px',
+            },
+            resultIcon: {
+                fontSize: '4rem',
+                marginBottom: '16px',
+            },
+            optionButton: {
+                width: '100%',
+                padding: '16px',
+                borderRadius: '10px',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                fontSize: '0.9375rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                marginBottom: '10px',
+                textAlign: 'left',
+            },
+            grid: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '12px',
+            },
+        };
+
+        // ============ COMPONENTS ============
+        
+        // Home Screen
+        const HomeScreen = ({ onSelectMode }) => {
+            return (
+                <div style={styles.container} className="fade-in">
+                    <div style={styles.header}>
+                        <img src="/Logokita.png" alt="Logo" style={styles.logo} />
+                        <h1 style={styles.title}>Memory Training</h1>
+                        <p style={styles.subtitle}>Learn and remember names efficiently</p>
+                    </div>
+
+                    <div style={styles.card}>
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>
+                            👥 Trainee Mode
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>
+                            {traineeData.length} trainees from B28 & B29
+                        </p>
+                        <button 
+                            style={{ ...styles.button, ...styles.buttonPrimary }}
+                            onClick={() => onSelectMode('trainee')}
+                        >
+                            Start Training
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <div style={styles.card}>
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>
+                            🎓 Trainer Mode
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>
+                            {getAllTrainers().length} trainers from Gen 19-2 to 25-2
+                        </p>
+                        <button 
+                            style={{ ...styles.button, ...styles.buttonPrimary }}
+                            onClick={() => onSelectMode('trainer')}
+                        >
+                            Start Training
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        <p>Built with ❤️ for better memory</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // Trainee Setup Screen
+        const TraineeSetupScreen = ({ onBack, onStart }) => {
+            const [filter, setFilter] = useState('all');
+            const [mode, setMode] = useState('multiple');
+            const jurusanList = getUniqueJurusan();
+
+            const filteredCount = useMemo(() => {
+                if (filter === 'all') return traineeData.length;
+                return traineeData.filter(t => t.jurusan === filter).length;
+            }, [filter]);
+
+            return (
+                <div style={styles.container} className="fade-in">
+                    <button style={styles.backButton} onClick={onBack}>
+                        ← Back to Home
+                    </button>
+
+                    <div style={styles.card}>
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>
+                            👥 Trainee Training Setup
+                        </h2>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                Filter by Major
+                            </label>
+                            <select 
+                                style={styles.select}
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                            >
+                                <option value="all">All Majors ({traineeData.length})</option>
+                                {jurusanList.map(j => (
+                                    <option key={j} value={j}>
+                                        {j} ({traineeData.filter(t => t.jurusan === j).length})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                Quiz Mode
+                            </label>
+                            <div style={styles.grid}>
+                                <button
+                                    style={{
+                                        ...styles.optionButton,
+                                        borderColor: mode === 'multiple' ? 'var(--accent)' : 'var(--border)',
+                                        background: mode === 'multiple' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                    }}
+                                    onClick={() => setMode('multiple')}
+                                >
+                                    <div style={{ fontWeight: '500' }}>Multiple Choice</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Pick from 4 options</div>
+                                </button>
+                                <button
+                                    style={{
+                                        ...styles.optionButton,
+                                        borderColor: mode === 'spelling' ? 'var(--accent)' : 'var(--border)',
+                                        background: mode === 'spelling' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                    }}
+                                    onClick={() => setMode('spelling')}
+                                >
+                                    <div style={{ fontWeight: '500' }}>Spelling Mode</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Type full name</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                📊 {filteredCount} trainees selected
+                            </p>
+                        </div>
+
+                        <button 
+                            style={{ ...styles.button, ...styles.buttonPrimary }}
+                            onClick={() => onStart({ filter, mode })}
+                            disabled={filteredCount === 0}
+                        >
+                            Start Quiz
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Trainer Setup Screen
+        const TrainerSetupScreen = ({ onBack, onStart }) => {
+            const [filter, setFilter] = useState('all');
+            const [filterType, setFilterType] = useState('generation');
+            const [mode, setMode] = useState('multiple');
+            
+            const generations = Object.keys(trainerData).sort((a, b) => {
+                const [aYear, aSem] = a.split('-').map(Number);
+                const [bYear, bSem] = b.split('-').map(Number);
+                return bYear - aYear || bSem - aSem;
+            });
+            const positions = getUniquePositions();
+
+            const filteredTrainers = useMemo(() => {
+                const all = getAllTrainers();
+                if (filter === 'all') return all;
+                if (filterType === 'generation') {
+                    return all.filter(t => t.generation === filter);
+                } else {
+                    return all.filter(t => t.position === filter);
+                }
+            }, [filter, filterType]);
+
+            return (
+                <div style={styles.container} className="fade-in">
+                    <button style={styles.backButton} onClick={onBack}>
+                        ← Back to Home
+                    </button>
+
+                    <div style={styles.card}>
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>
+                            🎓 Trainer Training Setup
+                        </h2>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                Filter Type
+                            </label>
+                            <div style={styles.grid}>
+                                <button
+                                    style={{
+                                        ...styles.optionButton,
+                                        borderColor: filterType === 'generation' ? 'var(--accent)' : 'var(--border)',
+                                        background: filterType === 'generation' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                        marginBottom: 0,
+                                    }}
+                                    onClick={() => { setFilterType('generation'); setFilter('all'); }}
+                                >
+                                    By Generation
+                                </button>
+                                <button
+                                    style={{
+                                        ...styles.optionButton,
+                                        borderColor: filterType === 'position' ? 'var(--accent)' : 'var(--border)',
+                                        background: filterType === 'position' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                        marginBottom: 0,
+                                    }}
+                                    onClick={() => { setFilterType('position'); setFilter('all'); }}
+                                >
+                                    By Position
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                {filterType === 'generation' ? 'Select Generation' : 'Select Position'}
+                            </label>
+                            <select 
+                                style={styles.select}
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                            >
+                                <option value="all">All ({getAllTrainers().length})</option>
+                                {filterType === 'generation' 
+                                    ? generations.map(g => (
+                                        <option key={g} value={g}>
+                                            Gen {g} ({trainerData[g].length})
+                                        </option>
+                                    ))
+                                    : positions.map(p => (
+                                        <option key={p} value={p}>
+                                            {p} ({getAllTrainers().filter(t => t.position === p).length})
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                Quiz Mode
+                            </label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {[
+                                    { id: 'multiple', label: 'Multiple Choice', desc: 'Pick name from 4 options' },
+                                    { id: 'spelling', label: 'Spelling Mode', desc: 'Type full name' },
+                                    { id: 'position', label: 'Guess Position', desc: 'Pick position from options' },
+                                ].map(m => (
+                                    <button
+                                        key={m.id}
+                                        style={{
+                                            ...styles.optionButton,
+                                            borderColor: mode === m.id ? 'var(--accent)' : 'var(--border)',
+                                            background: mode === m.id ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                            marginBottom: 0,
+                                        }}
+                                        onClick={() => setMode(m.id)}
+                                    >
+                                        <div style={{ fontWeight: '500' }}>{m.label}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{m.desc}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                📊 {filteredTrainers.length} trainers selected
+                            </p>
+                        </div>
+
+                        <button 
+                            style={{ ...styles.button, ...styles.buttonPrimary }}
+                            onClick={() => onStart({ filter, filterType, mode })}
+                            disabled={filteredTrainers.length === 0}
+                        >
+                            Start Quiz
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Quiz Screen Component
+        const QuizScreen = ({ type, config, onBack, onComplete }) => {
+            const [questions, setQuestions] = useState([]);
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [answered, setAnswered] = useState(false);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [textAnswer, setTextAnswer] = useState('');
+            const [showHint, setShowHint] = useState(false);
+            const [hintLevel, setHintLevel] = useState(0);
+            const [isCorrect, setIsCorrect] = useState(null);
+            const [progress, setProgress] = useState([]);
+
+            useEffect(() => {
+                let data = [];
+                if (type === 'trainee') {
+                    if (config.filter === 'all') {
+                        data = [...traineeData];
+                    } else {
+                        data = traineeData.filter(t => t.jurusan === config.filter);
+                    }
+                } else {
+                    const all = getAllTrainers();
+                    if (config.filter === 'all') {
+                        data = all;
+                    } else if (config.filterType === 'generation') {
+                        data = all.filter(t => t.generation === config.filter);
+                    } else {
+                        data = all.filter(t => t.position === config.filter);
+                    }
+                }
+                
+                const shuffled = shuffleArray(data);
+                const questionsWithOptions = shuffled.map(person => {
+                    let options;
+                    if (config.mode === 'position') {
+                        const allPositions = getUniquePositions();
+                        const wrongPositions = allPositions.filter(p => p !== person.position);
+                        const selectedWrong = shuffleArray(wrongPositions).slice(0, 3);
+                        options = shuffleArray([person.position, ...selectedWrong]);
+                    } else {
+                        const otherPeople = data.filter(p => p.name !== person.name);
+                        const wrongOptions = shuffleArray(otherPeople).slice(0, 3).map(p => p.name);
+                        options = shuffleArray([person.name, ...wrongOptions]);
+                    }
+                    return { ...person, options };
+                });
+                
+                setQuestions(questionsWithOptions);
+                setProgress(new Array(questionsWithOptions.length).fill(null));
+            }, [type, config]);
+
+            const currentQuestion = questions[currentIndex];
+
+            const generateHint = useCallback((name, level) => {
+                const parts = name.split(' ');
+                switch (level) {
+                    case 1:
+                        return `First name starts with: ${parts[0][0]}...`;
+                    case 2:
+                        return `First name: ${parts[0]}`;
+                    case 3:
+                        return parts.map(p => p[0] + '_'.repeat(p.length - 1)).join(' ');
+                    default:
+                        return '';
+                }
+            }, []);
+
+            const handleMultipleChoice = (answer) => {
+                if (answered) return;
+                
+                const correct = config.mode === 'position' 
+                    ? answer === currentQuestion.position 
+                    : answer === currentQuestion.name;
+                
+                setSelectedAnswer(answer);
+                setAnswered(true);
+                setIsCorrect(correct);
+                
+                if (correct) {
+                    setScore(s => s + (hintLevel === 0 ? 10 : Math.max(1, 10 - hintLevel * 3)));
+                }
+                
+                setProgress(prev => {
+                    const newProgress = [...prev];
+                    newProgress[currentIndex] = correct;
+                    return newProgress;
+                });
+            };
+
+            const handleTextSubmit = (e) => {
+                e.preventDefault();
+                if (answered || !textAnswer.trim()) return;
+                
+                const correctName = currentQuestion.name;
+                const userAnswer = normalizeText(textAnswer);
+                const correctAnswer = normalizeText(correctName);
+                
+                const correct = userAnswer === correctAnswer;
+                
+                setAnswered(true);
+                setIsCorrect(correct);
+                
+                if (correct) {
+                    setScore(s => s + (hintLevel === 0 ? 15 : Math.max(1, 15 - hintLevel * 4)));
+                }
+                
+                setProgress(prev => {
+                    const newProgress = [...prev];
+                    newProgress[currentIndex] = correct;
+                    return newProgress;
+                });
+            };
+
+            const handleNext = () => {
+                if (currentIndex < questions.length - 1) {
+                    setCurrentIndex(i => i + 1);
+                    setAnswered(false);
+                    setSelectedAnswer(null);
+                    setTextAnswer('');
+                    setShowHint(false);
+                    setHintLevel(0);
+                    setIsCorrect(null);
+                } else {
+                    onComplete({ score, total: questions.length, progress });
+                }
+            };
+
+            const handleShowHint = () => {
+                if (hintLevel < 3) {
+                    setHintLevel(h => h + 1);
+                    setShowHint(true);
+                }
+            };
+
+            if (questions.length === 0) {
+                return (
+                    <div style={styles.container}>
+                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</p>
+                    </div>
+                );
+            }
+
+            const progressPercent = ((currentIndex + (answered ? 1 : 0)) / questions.length) * 100;
+
+            return (
+                <div style={styles.container} className="fade-in">
+                    <button style={styles.backButton} onClick={onBack}>
+                        ← Exit Quiz
+                    </button>
+
+                    <div style={styles.scoreDisplay}>
+                        <div>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SCORE</span>
+                            <div style={{ fontSize: '1.25rem', fontWeight: '700', fontFamily: "'JetBrains Mono', monospace" }}>
+                                {score}
+                            </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>PROGRESS</span>
+                            <div style={{ fontSize: '1.25rem', fontWeight: '700', fontFamily: "'JetBrains Mono', monospace" }}>
+                                {currentIndex + 1}/{questions.length}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={styles.progressBar}>
+                        <div style={{ ...styles.progressFill, width: `${progressPercent}%` }} />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '3px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                        {progress.map((p, i) => (
+                            <div
+                                key={i}
+                                style={{
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '2px',
+                                    background: p === null 
+                                        ? 'var(--bg-tertiary)' 
+                                        : p ? 'var(--success)' : 'var(--error)',
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    <div style={styles.card} className={isCorrect === false ? 'shake' : ''}>
+                        <img 
+                            src={currentQuestion.img}
+                            alt="Person"
+                            style={styles.personImage}
+                            onError={(e) => { e.target.src = '/Logokita.png'; }}
+                        />
+
+                        {type === 'trainer' && (
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <span style={styles.tag}>Gen {currentQuestion.generation}</span>
+                                <span style={styles.tag}>{currentQuestion.initial}</span>
+                            </div>
+                        )}
+
+                        {type === 'trainee' && (
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <span style={styles.tag}>{currentQuestion.tnumber}</span>
+                                <span style={styles.tag}>{currentQuestion.angkatan}</span>
+                                <span style={styles.tag}>{currentQuestion.jurusan}</span>
+                            </div>
+                        )}
+
+                        {config.mode === 'position' && (
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <p style={{ fontSize: '1.125rem', fontWeight: '600' }}>{currentQuestion.name}</p>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '4px' }}>
+                                    What is their position?
+                                </p>
+                            </div>
+                        )}
+
+                        {config.mode !== 'position' && (
+                            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                                Who is this person?
+                            </p>
+                        )}
+
+                        {(config.mode === 'multiple' || config.mode === 'position') && (
+                            <div>
+                                {currentQuestion.options.map((option, idx) => {
+                                    const correctAnswer = config.mode === 'position' 
+                                        ? currentQuestion.position 
+                                        : currentQuestion.name;
+                                    const isSelected = selectedAnswer === option;
+                                    const isOptionCorrect = option === correctAnswer;
+                                    
+                                    let buttonStyle = { ...styles.optionButton };
+                                    if (answered) {
+                                        if (isOptionCorrect) {
+                                            buttonStyle = { ...buttonStyle, borderColor: 'var(--success)', background: 'rgba(34, 197, 94, 0.1)' };
+                                        } else if (isSelected && !isOptionCorrect) {
+                                            buttonStyle = { ...buttonStyle, borderColor: 'var(--error)', background: 'rgba(239, 68, 68, 0.1)' };
+                                        }
+                                    }
+                                    
+                                    return (
+                                        <button
+                                            key={idx}
+                                            style={buttonStyle}
+                                            onClick={() => handleMultipleChoice(option)}
+                                            disabled={answered}
+                                        >
+                                            <span style={{ 
+                                                display: 'inline-block', 
+                                                width: '24px', 
+                                                height: '24px', 
+                                                borderRadius: '6px',
+                                                background: 'var(--bg-primary)',
+                                                textAlign: 'center',
+                                                lineHeight: '24px',
+                                                marginRight: '12px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: '600',
+                                            }}>
+                                                {String.fromCharCode(65 + idx)}
+                                            </span>
+                                            {option}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {config.mode === 'spelling' && (
+                            <form onSubmit={handleTextSubmit}>
+                                <input
+                                    type="text"
+                                    style={{
+                                        ...styles.input,
+                                        borderColor: answered 
+                                            ? (isCorrect ? 'var(--success)' : 'var(--error)') 
+                                            : 'var(--border)',
+                                        marginBottom: '12px',
+                                    }}
+                                    placeholder="Type the full name..."
+                                    value={textAnswer}
+                                    onChange={(e) => setTextAnswer(e.target.value)}
+                                    disabled={answered}
+                                    autoComplete="off"
+                                    autoCapitalize="words"
+                                />
+                                {!answered && (
+                                    <button 
+                                        type="submit"
+                                        style={{ ...styles.button, ...styles.buttonPrimary }}
+                                    >
+                                        Submit Answer
+                                    </button>
+                                )}
+                                {answered && !isCorrect && (
+                                    <div style={{ 
+                                        padding: '12px', 
+                                        background: 'rgba(239, 68, 68, 0.1)', 
+                                        borderRadius: '8px',
+                                        marginBottom: '12px',
+                                    }}>
+                                        <p style={{ color: 'var(--error)', fontSize: '0.875rem' }}>
+                                            Correct answer: <strong>{currentQuestion.name}</strong>
+                                        </p>
+                                    </div>
+                                )}
+                            </form>
+                        )}
+
+                        {!answered && config.mode !== 'position' && (
+                            <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                                <button 
+                                    style={styles.hintButton}
+                                    onClick={handleShowHint}
+                                    disabled={hintLevel >= 3}
+                                >
+                                    💡 Get Hint ({3 - hintLevel} left)
+                                </button>
+                                {showHint && (
+                                    <div style={styles.hintText}>
+                                        {generateHint(currentQuestion.name, hintLevel)}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {answered && (
+                            <div style={{ marginTop: '16px' }}>
+                                <div style={{ 
+                                    textAlign: 'center', 
+                                    marginBottom: '16px',
+                                    padding: '12px',
+                                    background: isCorrect ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                    borderRadius: '8px',
+                                }}>
+                                    <span style={{ 
+                                        fontSize: '1.5rem', 
+                                        marginRight: '8px' 
+                                    }}>
+                                        {isCorrect ? '✅' : '❌'}
+                                    </span>
+                                    <span style={{ 
+                                        color: isCorrect ? 'var(--success)' : 'var(--error)',
+                                        fontWeight: '600',
+                                    }}>
+                                        {isCorrect ? 'Correct!' : 'Incorrect'}
+                                    </span>
+                                </div>
+                                <button
+                                    style={{ ...styles.button, ...styles.buttonPrimary }}
+                                    onClick={handleNext}
+                                >
+                                    {currentIndex < questions.length - 1 ? 'Next Question' : 'See Results'}
+                                    <span>→</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Results Screen
+        const ResultsScreen = ({ results, onRestart, onHome }) => {
+            const percentage = Math.round((results.progress.filter(p => p === true).length / results.total) * 100);
+            const correctCount = results.progress.filter(p => p === true).length;
+            
+            let emoji, message;
+            if (percentage >= 90) {
+                emoji = '🏆';
+                message = 'Outstanding! You have excellent memory!';
+            } else if (percentage >= 70) {
+                emoji = '🌟';
+                message = 'Great job! Keep practicing!';
+            } else if (percentage >= 50) {
+                emoji = '💪';
+                message = 'Good effort! Room for improvement.';
+            } else {
+                emoji = '📚';
+                message = 'Keep studying! Practice makes perfect.';
+            }
+
+            return (
+                <div style={styles.container} className="fade-in">
+                    <div style={{ ...styles.card, ...styles.resultCard }}>
+                        <div style={styles.resultIcon}>{emoji}</div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '8px' }}>
+                            Quiz Complete!
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                            {message}
+                        </p>
+
+                        <div style={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(3, 1fr)', 
+                            gap: '16px',
+                            marginBottom: '24px',
+                        }}>
+                            <div style={{ 
+                                padding: '16px', 
+                                background: 'var(--bg-tertiary)', 
+                                borderRadius: '12px',
+                            }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--accent)', fontFamily: "'JetBrains Mono', monospace" }}>
+                                    {results.score}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                    SCORE
+                                </div>
+                            </div>
+                            <div style={{ 
+                                padding: '16px', 
+                                background: 'var(--bg-tertiary)', 
+                                borderRadius: '12px',
+                            }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--success)', fontFamily: "'JetBrains Mono', monospace" }}>
+                                    {correctCount}/{results.total}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                    CORRECT
+                                </div>
+                            </div>
+                            <div style={{ 
+                                padding: '16px', 
+                                background: 'var(--bg-tertiary)', 
+                                borderRadius: '12px',
+                            }}>
+                                <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--warning)', fontFamily: "'JetBrains Mono', monospace" }}>
+                                    {percentage}%
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                    ACCURACY
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'center', marginBottom: '24px' }}>
+                            {results.progress.map((p, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        width: '12px',
+                                        height: '12px',
+                                        borderRadius: '3px',
+                                        background: p ? 'var(--success)' : 'var(--error)',
+                                    }}
+                                    title={`Question ${i + 1}: ${p ? 'Correct' : 'Incorrect'}`}
+                                />
+                            ))}
+                        </div>
+
+                        <button 
+                            style={{ ...styles.button, ...styles.buttonPrimary, marginBottom: '8px' }}
+                            onClick={onRestart}
+                        >
+                            Try Again
+                            <span>🔄</span>
+                        </button>
+                        <button 
+                            style={styles.button}
+                            onClick={onHome}
+                        >
+                            Back to Home
+                            <span>🏠</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App
+        const App = () => {
+            const [screen, setScreen] = useState('home');
+            const [quizType, setQuizType] = useState(null);
+            const [quizConfig, setQuizConfig] = useState(null);
+            const [results, setResults] = useState(null);
+
+            const handleSelectMode = (mode) => {
+                setQuizType(mode);
+                setScreen(mode === 'trainee' ? 'trainee-setup' : 'trainer-setup');
+            };
+
+            const handleStartQuiz = (config) => {
+                setQuizConfig(config);
+                setScreen('quiz');
+            };
+
+            const handleQuizComplete = (quizResults) => {
+                setResults(quizResults);
+                setScreen('results');
+            };
+
+            const handleRestart = () => {
+                setScreen('quiz');
+            };
+
+            const handleHome = () => {
+                setScreen('home');
+                setQuizType(null);
+                setQuizConfig(null);
+                setResults(null);
+            };
+
+            switch (screen) {
+                case 'home':
+                    return <HomeScreen onSelectMode={handleSelectMode} />;
+                case 'trainee-setup':
+                    return (
+                        <TraineeSetupScreen 
+                            onBack={handleHome}
+                            onStart={handleStartQuiz}
+                        />
+                    );
+                case 'trainer-setup':
+                    return (
+                        <TrainerSetupScreen 
+                            onBack={handleHome}
+                            onStart={handleStartQuiz}
+                        />
+                    );
+                case 'quiz':
+                    return (
+                        <QuizScreen
+                            type={quizType}
+                            config={quizConfig}
+                            onBack={handleHome}
+                            onComplete={handleQuizComplete}
+                        />
+                    );
+                case 'results':
+                    return (
+                        <ResultsScreen
+                            results={results}
+                            onRestart={handleRestart}
+                            onHome={handleHome}
+                        />
+                    );
+                default:
+                    return <HomeScreen onSelectMode={handleSelectMode} />;
+            }
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

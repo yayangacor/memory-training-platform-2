@@ -46,7 +46,6 @@
             min-height: 100vh;
         }
 
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -65,7 +64,6 @@
             background: var(--text-muted);
         }
 
-        /* Animation keyframes */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -236,6 +234,25 @@
             ]
         };
 
+        // Subject mapping - maps initial prefix to subjects
+        const subjectMapping = {
+            "A&DS": ["GS", "RL", "LH", "IL", "KH", "FB", "KK", "PP", "KA", "GN", "IO", "PB", "VM", "WS", "FD", "VS", "MR", "SF"],
+            "Database": ["IV", "NG", "CW", "MF", "IR", "JM", "AS", "JZ", "RE", "YD", "PB", "XD", "PP"],
+            "Java": ["ES", "NP", "RU", "MM", "YK", "GT", "RL", "FO", "BT", "OI", "JH", "AY", "JO", "IV", "IL", "XK", "PP"],
+            "Web Design": ["WE", "OI", "MV", "NS", "YD", "TI", "AC", "VD", "GY", "LO", "LF", "CT", "NP", "VR", "VU", "ZK"],
+            "Web Programming": ["IL", "MX", "SV", "CF", "FB", "VK", "RU", "GS", "HI", "LM", "VD", "PP", "DT", "KH", "MV", "PL", "VU"],
+            "Network": ["EV", "FB", "YD", "VS", "JM", "OV", "NL", "JC", "HO", "MS", "IO", "MH", "VL", "XY", "VI", "HH", "PL", "SF"]
+        };
+
+        const subjectFullNames = {
+            "A&DS": "Algorithm & Data Structure",
+            "Database": "Database",
+            "Java": "Java Programming",
+            "Web Design": "Web Design",
+            "Web Programming": "Web Programming",
+            "Network": "Network"
+        };
+
         // ============ UTILITY FUNCTIONS ============
         const shuffleArray = (array) => {
             const newArray = [...array];
@@ -249,9 +266,23 @@
         const getAllTrainers = () => {
             const all = [];
             Object.entries(trainerData).forEach(([gen, trainers]) => {
-                trainers.forEach(t => all.push({ ...t, generation: gen }));
+                trainers.forEach(t => {
+                    const initialPrefix = t.initial.replace(/[0-9-]/g, '');
+                    const subjects = [];
+                    Object.entries(subjectMapping).forEach(([subject, initials]) => {
+                        if (initials.includes(initialPrefix)) {
+                            subjects.push(subject);
+                        }
+                    });
+                    all.push({ ...t, generation: gen, subjects });
+                });
             });
             return all;
+        };
+
+        const getTrainersBySubject = (subject) => {
+            const all = getAllTrainers();
+            return all.filter(t => t.subjects.includes(subject));
         };
 
         const getUniquePositions = () => {
@@ -384,6 +415,17 @@
                 marginRight: '6px',
                 marginBottom: '6px',
             },
+            tagSubject: {
+                display: 'inline-block',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.7rem',
+                fontWeight: '500',
+                background: 'rgba(99, 102, 241, 0.2)',
+                color: 'var(--accent-hover)',
+                marginRight: '4px',
+                marginBottom: '4px',
+            },
             progressBar: {
                 width: '100%',
                 height: '6px',
@@ -463,6 +505,11 @@
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '12px',
+            },
+            grid3: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '8px',
             },
         };
 
@@ -618,15 +665,19 @@
                 return bYear - aYear || bSem - aSem;
             });
             const positions = getUniquePositions();
+            const subjects = Object.keys(subjectMapping);
 
             const filteredTrainers = useMemo(() => {
                 const all = getAllTrainers();
                 if (filter === 'all') return all;
                 if (filterType === 'generation') {
                     return all.filter(t => t.generation === filter);
-                } else {
+                } else if (filterType === 'position') {
                     return all.filter(t => t.position === filter);
+                } else if (filterType === 'subject') {
+                    return all.filter(t => t.subjects.includes(filter));
                 }
+                return all;
             }, [filter, filterType]);
 
             return (
@@ -644,35 +695,52 @@
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                                 Filter Type
                             </label>
-                            <div style={styles.grid}>
+                            <div style={styles.grid3}>
                                 <button
                                     style={{
                                         ...styles.optionButton,
+                                        padding: '12px 8px',
                                         borderColor: filterType === 'generation' ? 'var(--accent)' : 'var(--border)',
                                         background: filterType === 'generation' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
                                         marginBottom: 0,
+                                        textAlign: 'center',
                                     }}
                                     onClick={() => { setFilterType('generation'); setFilter('all'); }}
                                 >
-                                    By Generation
+                                    <div style={{ fontSize: '0.8125rem' }}>Generation</div>
                                 </button>
                                 <button
                                     style={{
                                         ...styles.optionButton,
+                                        padding: '12px 8px',
                                         borderColor: filterType === 'position' ? 'var(--accent)' : 'var(--border)',
                                         background: filterType === 'position' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
                                         marginBottom: 0,
+                                        textAlign: 'center',
                                     }}
                                     onClick={() => { setFilterType('position'); setFilter('all'); }}
                                 >
-                                    By Position
+                                    <div style={{ fontSize: '0.8125rem' }}>Position</div>
+                                </button>
+                                <button
+                                    style={{
+                                        ...styles.optionButton,
+                                        padding: '12px 8px',
+                                        borderColor: filterType === 'subject' ? 'var(--accent)' : 'var(--border)',
+                                        background: filterType === 'subject' ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
+                                        marginBottom: 0,
+                                        textAlign: 'center',
+                                    }}
+                                    onClick={() => { setFilterType('subject'); setFilter('all'); }}
+                                >
+                                    <div style={{ fontSize: '0.8125rem' }}>Subject</div>
                                 </button>
                             </div>
                         </div>
 
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                                {filterType === 'generation' ? 'Select Generation' : 'Select Position'}
+                                {filterType === 'generation' ? 'Select Generation' : filterType === 'position' ? 'Select Position' : 'Select Subject'}
                             </label>
                             <select 
                                 style={styles.select}
@@ -680,18 +748,21 @@
                                 onChange={(e) => setFilter(e.target.value)}
                             >
                                 <option value="all">All ({getAllTrainers().length})</option>
-                                {filterType === 'generation' 
-                                    ? generations.map(g => (
-                                        <option key={g} value={g}>
-                                            Gen {g} ({trainerData[g].length})
-                                        </option>
-                                    ))
-                                    : positions.map(p => (
-                                        <option key={p} value={p}>
-                                            {p} ({getAllTrainers().filter(t => t.position === p).length})
-                                        </option>
-                                    ))
-                                }
+                                {filterType === 'generation' && generations.map(g => (
+                                    <option key={g} value={g}>
+                                        Gen {g} ({trainerData[g].length})
+                                    </option>
+                                ))}
+                                {filterType === 'position' && positions.map(p => (
+                                    <option key={p} value={p}>
+                                        {p} ({getAllTrainers().filter(t => t.position === p).length})
+                                    </option>
+                                ))}
+                                {filterType === 'subject' && subjects.map(s => (
+                                    <option key={s} value={s}>
+                                        {subjectFullNames[s]} ({getTrainersBySubject(s).length})
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
@@ -704,6 +775,7 @@
                                     { id: 'multiple', label: 'Multiple Choice', desc: 'Pick name from 4 options' },
                                     { id: 'spelling', label: 'Spelling Mode', desc: 'Type full name' },
                                     { id: 'position', label: 'Guess Position', desc: 'Pick position from options' },
+                                    { id: 'subject', label: 'Guess Subject', desc: 'Pick subject from options' },
                                 ].map(m => (
                                     <button
                                         key={m.id}
@@ -768,8 +840,10 @@
                         data = all;
                     } else if (config.filterType === 'generation') {
                         data = all.filter(t => t.generation === config.filter);
-                    } else {
+                    } else if (config.filterType === 'position') {
                         data = all.filter(t => t.position === config.filter);
+                    } else if (config.filterType === 'subject') {
+                        data = all.filter(t => t.subjects.includes(config.filter));
                     }
                 }
                 
@@ -781,6 +855,12 @@
                         const wrongPositions = allPositions.filter(p => p !== person.position);
                         const selectedWrong = shuffleArray(wrongPositions).slice(0, 3);
                         options = shuffleArray([person.position, ...selectedWrong]);
+                    } else if (config.mode === 'subject') {
+                        const allSubjects = Object.keys(subjectMapping);
+                        const correctSubject = person.subjects[0] || allSubjects[0];
+                        const wrongSubjects = allSubjects.filter(s => !person.subjects.includes(s));
+                        const selectedWrong = shuffleArray(wrongSubjects).slice(0, 3);
+                        options = shuffleArray([correctSubject, ...selectedWrong]);
                     } else {
                         const otherPeople = data.filter(p => p.name !== person.name);
                         const wrongOptions = shuffleArray(otherPeople).slice(0, 3).map(p => p.name);
@@ -812,9 +892,14 @@
             const handleMultipleChoice = (answer) => {
                 if (answered) return;
                 
-                const correct = config.mode === 'position' 
-                    ? answer === currentQuestion.position 
-                    : answer === currentQuestion.name;
+                let correct;
+                if (config.mode === 'position') {
+                    correct = answer === currentQuestion.position;
+                } else if (config.mode === 'subject') {
+                    correct = currentQuestion.subjects.includes(answer);
+                } else {
+                    correct = answer === currentQuestion.name;
+                }
                 
                 setSelectedAnswer(answer);
                 setAnswered(true);
@@ -936,9 +1021,17 @@
                         />
 
                         {type === 'trainer' && (
-                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
                                 <span style={styles.tag}>Gen {currentQuestion.generation}</span>
                                 <span style={styles.tag}>{currentQuestion.initial}</span>
+                            </div>
+                        )}
+
+                        {type === 'trainer' && currentQuestion.subjects && currentQuestion.subjects.length > 0 && config.mode !== 'subject' && (
+                            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                                {currentQuestion.subjects.map(s => (
+                                    <span key={s} style={styles.tagSubject}>{s}</span>
+                                ))}
                             </div>
                         )}
 
@@ -959,20 +1052,34 @@
                             </div>
                         )}
 
-                        {config.mode !== 'position' && (
+                        {config.mode === 'subject' && (
+                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                                <p style={{ fontSize: '1.125rem', fontWeight: '600' }}>{currentQuestion.name}</p>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '4px' }}>
+                                    What subject do they teach?
+                                </p>
+                            </div>
+                        )}
+
+                        {config.mode !== 'position' && config.mode !== 'subject' && (
                             <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '16px' }}>
                                 Who is this person?
                             </p>
                         )}
 
-                        {(config.mode === 'multiple' || config.mode === 'position') && (
+                        {(config.mode === 'multiple' || config.mode === 'position' || config.mode === 'subject') && (
                             <div>
                                 {currentQuestion.options.map((option, idx) => {
-                                    const correctAnswer = config.mode === 'position' 
-                                        ? currentQuestion.position 
-                                        : currentQuestion.name;
+                                    let isOptionCorrect;
+                                    if (config.mode === 'position') {
+                                        isOptionCorrect = option === currentQuestion.position;
+                                    } else if (config.mode === 'subject') {
+                                        isOptionCorrect = currentQuestion.subjects.includes(option);
+                                    } else {
+                                        isOptionCorrect = option === currentQuestion.name;
+                                    }
+                                    
                                     const isSelected = selectedAnswer === option;
-                                    const isOptionCorrect = option === correctAnswer;
                                     
                                     let buttonStyle = { ...styles.optionButton };
                                     if (answered) {
@@ -983,6 +1090,8 @@
                                         }
                                     }
                                     
+                                    const displayOption = config.mode === 'subject' ? subjectFullNames[option] : option;
+                                    
                                     return (
                                         <button
                                             key={idx}
@@ -991,20 +1100,21 @@
                                             disabled={answered}
                                         >
                                             <span style={{ 
-                                                display: 'inline-block', 
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
                                                 width: '24px', 
                                                 height: '24px', 
                                                 borderRadius: '6px',
                                                 background: 'var(--bg-primary)',
-                                                textAlign: 'center',
-                                                lineHeight: '24px',
                                                 marginRight: '12px',
                                                 fontSize: '0.75rem',
                                                 fontWeight: '600',
+                                                flexShrink: 0,
                                             }}>
                                                 {String.fromCharCode(65 + idx)}
                                             </span>
-                                            {option}
+                                            <span style={{ wordBreak: 'break-word' }}>{displayOption}</span>
                                         </button>
                                     );
                                 })}
@@ -1052,7 +1162,7 @@
                             </form>
                         )}
 
-                        {!answered && config.mode !== 'position' && (
+                        {!answered && config.mode !== 'position' && config.mode !== 'subject' && (
                             <div style={{ marginTop: '16px', textAlign: 'center' }}>
                                 <button 
                                     style={styles.hintButton}
@@ -1090,6 +1200,11 @@
                                     }}>
                                         {isCorrect ? 'Correct!' : 'Incorrect'}
                                     </span>
+                                    {config.mode === 'subject' && !isCorrect && currentQuestion.subjects.length > 0 && (
+                                        <div style={{ marginTop: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                                            Correct: {currentQuestion.subjects.map(s => subjectFullNames[s]).join(', ')}
+                                        </div>
+                                    )}
                                 </div>
                                 <button
                                     style={{ ...styles.button, ...styles.buttonPrimary }}

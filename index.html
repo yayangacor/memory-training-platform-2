@@ -11,12 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #0a0a0b;
             --bg-secondary: #141417;
@@ -33,7 +28,6 @@
             --border: #2d2d32;
             --border-light: #3d3d42;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
@@ -41,57 +35,17 @@
             min-height: 100vh;
             line-height: 1.5;
         }
-
-        #root {
-            min-height: 100vh;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-light);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.9); opacity: 0; }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .shake {
-            animation: shake 0.3s ease-in-out;
-        }
-
-        .bounce-in {
-            animation: bounceIn 0.3s ease-out;
-        }
+        #root { min-height: 100vh; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes bounceIn { 0% { transform: scale(0.9); opacity: 0; } 50% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        .shake { animation: shake 0.3s ease-in-out; }
+        .bounce-in { animation: bounceIn 0.3s ease-out; }
     </style>
 </head>
 <body>
@@ -264,9 +218,7 @@
                     const initialPrefix = t.initial.replace(/[0-9-]/g, '');
                     const subjects = [];
                     Object.entries(subjectMapping).forEach(([subject, initials]) => {
-                        if (initials.includes(initialPrefix)) {
-                            subjects.push(subject);
-                        }
+                        if (initials.includes(initialPrefix)) subjects.push(subject);
                     });
                     all.push({ ...t, generation: gen, subjects });
                 });
@@ -274,16 +226,11 @@
             return all;
         };
 
-        const getTrainersBySubject = (subject) => {
-            const all = getAllTrainers();
-            return all.filter(t => t.subjects.includes(subject));
-        };
+        const getTrainersBySubject = (subject) => getAllTrainers().filter(t => t.subjects.includes(subject));
 
         const getUniquePositions = () => {
             const positions = new Set();
-            getAllTrainers().forEach(t => {
-                if (t.position) positions.add(t.position);
-            });
+            getAllTrainers().forEach(t => { if (t.position) positions.add(t.position); });
             return Array.from(positions).sort();
         };
 
@@ -293,342 +240,99 @@
             return Array.from(jurusan).sort();
         };
 
-        const normalizeText = (text) => {
-            return text.toLowerCase().trim().replace(/['']/g, "'");
+        const normalizeText = (text) => text.toLowerCase().trim().replace(/['']/g, "'");
+
+        const censorInitial = (initial) => {
+            const prefix = initial.substring(0, 2);
+            return `${prefix}**-*`;
         };
 
         // ============ STYLES ============
         const styles = {
-            container: {
-                maxWidth: '600px',
-                margin: '0 auto',
-                padding: '16px',
-                minHeight: '100vh',
-            },
-            header: {
-                textAlign: 'center',
-                padding: '24px 0',
-                borderBottom: '1px solid var(--border)',
-                marginBottom: '24px',
-            },
-            logo: {
-                width: '60px',
-                height: '60px',
-                borderRadius: '12px',
-                marginBottom: '12px',
-            },
-            title: {
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                marginBottom: '4px',
-                fontFamily: "'JetBrains Mono', monospace",
-            },
-            subtitle: {
-                color: 'var(--text-secondary)',
-                fontSize: '0.875rem',
-            },
-            card: {
-                background: 'var(--bg-secondary)',
-                borderRadius: '12px',
-                padding: '20px',
-                marginBottom: '16px',
-                border: '1px solid var(--border)',
-            },
-            button: {
-                width: '100%',
-                padding: '14px 20px',
-                borderRadius: '10px',
-                border: 'none',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)',
-                fontSize: '0.9375rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '8px',
-            },
-            buttonPrimary: {
-                background: 'var(--accent)',
-                color: 'white',
-            },
-            input: {
-                width: '100%',
-                padding: '14px 16px',
-                borderRadius: '10px',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'border-color 0.2s ease',
-            },
-            select: {
-                width: '100%',
-                padding: '14px 16px',
-                borderRadius: '10px',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)',
-                fontSize: '0.9375rem',
-                outline: 'none',
-                cursor: 'pointer',
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 12px center',
-                backgroundSize: '20px',
-            },
-            personImage: {
-                width: '180px',
-                height: '180px',
-                borderRadius: '16px',
-                objectFit: 'cover',
-                margin: '0 auto 20px',
-                display: 'block',
-                border: '3px solid var(--border)',
-            },
-            tag: {
-                display: 'inline-block',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-secondary)',
-                marginRight: '6px',
-                marginBottom: '6px',
-            },
-            tagSubject: {
-                display: 'inline-block',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.7rem',
-                fontWeight: '500',
-                background: 'rgba(99, 102, 241, 0.2)',
-                color: 'var(--accent-hover)',
-                marginRight: '4px',
-                marginBottom: '4px',
-            },
-            progressBar: {
-                width: '100%',
-                height: '6px',
-                background: 'var(--bg-tertiary)',
-                borderRadius: '3px',
-                overflow: 'hidden',
-                marginBottom: '8px',
-            },
-            progressFill: {
-                height: '100%',
-                background: 'var(--accent)',
-                transition: 'width 0.3s ease',
-            },
-            scoreDisplay: {
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '12px 16px',
-                background: 'var(--bg-tertiary)',
-                borderRadius: '10px',
-                marginBottom: '16px',
-            },
-            hintButton: {
-                padding: '8px 16px',
-                borderRadius: '8px',
-                border: '1px solid var(--border)',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                fontSize: '0.8125rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-            },
-            hintText: {
-                padding: '12px 16px',
-                background: 'var(--bg-tertiary)',
-                borderRadius: '8px',
-                marginTop: '12px',
-                fontSize: '0.875rem',
-                color: 'var(--warning)',
-                fontFamily: "'JetBrains Mono', monospace",
-            },
-            backButton: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 16px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                marginBottom: '16px',
-            },
-            resultCard: {
-                textAlign: 'center',
-                padding: '32px 20px',
-            },
-            resultIcon: {
-                fontSize: '4rem',
-                marginBottom: '16px',
-            },
-            optionButton: {
-                width: '100%',
-                padding: '14px',
-                borderRadius: '10px',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-tertiary)',
-                color: 'var(--text-primary)',
-                fontSize: '0.875rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                marginBottom: '8px',
-                textAlign: 'left',
-                display: 'flex',
-                alignItems: 'center',
-            },
-            grid: {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '12px',
-            },
-            grid3: {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: '8px',
-            },
-            sectionLabel: {
-                fontSize: '0.8125rem',
-                fontWeight: '600',
-                color: 'var(--text-muted)',
-                marginBottom: '10px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-            },
-            divider: {
-                height: '1px',
-                background: 'var(--border)',
-                margin: '16px 0',
-            },
+            container: { maxWidth: '600px', margin: '0 auto', padding: '16px', minHeight: '100vh' },
+            header: { textAlign: 'center', padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: '24px' },
+            logo: { width: '60px', height: '60px', borderRadius: '12px', marginBottom: '12px' },
+            title: { fontSize: '1.5rem', fontWeight: '700', marginBottom: '4px', fontFamily: "'JetBrains Mono', monospace" },
+            subtitle: { color: 'var(--text-secondary)', fontSize: '0.875rem' },
+            card: { background: 'var(--bg-secondary)', borderRadius: '12px', padding: '20px', marginBottom: '16px', border: '1px solid var(--border)' },
+            button: { width: '100%', padding: '14px 20px', borderRadius: '10px', border: 'none', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '0.9375rem', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' },
+            buttonPrimary: { background: 'var(--accent)', color: 'white' },
+            input: { width: '100%', padding: '14px 16px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s ease' },
+            inputSmall: { width: '50px', padding: '10px 8px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', textAlign: 'center', fontFamily: "'JetBrains Mono', monospace" },
+            select: { width: '100%', padding: '14px 16px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '0.9375rem', outline: 'none', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' },
+            personImage: { width: '180px', height: '180px', borderRadius: '16px', objectFit: 'cover', margin: '0 auto 20px', display: 'block', border: '3px solid var(--border)' },
+            tag: { display: 'inline-block', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '500', background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', marginRight: '6px', marginBottom: '6px' },
+            tagSubject: { display: 'inline-block', padding: '4px 10px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: '500', background: 'rgba(99, 102, 241, 0.2)', color: 'var(--accent-hover)', marginRight: '4px', marginBottom: '4px' },
+            progressBar: { width: '100%', height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px' },
+            progressFill: { height: '100%', background: 'var(--accent)', transition: 'width 0.3s ease' },
+            scoreDisplay: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-tertiary)', borderRadius: '10px', marginBottom: '16px' },
+            hintButton: { padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '0.8125rem', cursor: 'pointer', transition: 'all 0.2s ease' },
+            hintText: { padding: '12px 16px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginTop: '12px', fontSize: '0.875rem', color: 'var(--warning)', fontFamily: "'JetBrains Mono', monospace" },
+            backButton: { display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'transparent', color: 'var(--text-secondary)', fontSize: '0.875rem', cursor: 'pointer', marginBottom: '16px' },
+            resultCard: { textAlign: 'center', padding: '32px 20px' },
+            resultIcon: { fontSize: '4rem', marginBottom: '16px' },
+            optionButton: { width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid var(--border)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.2s ease', marginBottom: '8px', textAlign: 'left', display: 'flex', alignItems: 'center' },
+            grid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' },
+            grid3: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' },
+            sectionLabel: { fontSize: '0.8125rem', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' },
+            divider: { height: '1px', background: 'var(--border)', margin: '16px 0' },
+            feedbackItem: { display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', borderRadius: '6px', marginBottom: '6px', fontSize: '0.875rem' },
         };
 
         // ============ COMPONENTS ============
         
-        const HomeScreen = ({ onSelectMode }) => {
-            return (
-                <div style={styles.container} className="fade-in">
-                    <div style={styles.header}>
-                        <img src="/Logokita.png" alt="Logo" style={styles.logo} />
-                        <h1 style={styles.title}>Memory Training</h1>
-                        <p style={styles.subtitle}>Learn and remember names efficiently</p>
-                    </div>
-
-                    <div style={styles.card}>
-                        <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>
-                            👥 Trainee Mode
-                        </h2>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>
-                            {traineeData.length} trainees from B28 & B29
-                        </p>
-                        <button 
-                            style={{ ...styles.button, ...styles.buttonPrimary }}
-                            onClick={() => onSelectMode('trainee')}
-                        >
-                            Start Training
-                            <span>→</span>
-                        </button>
-                    </div>
-
-                    <div style={styles.card}>
-                        <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>
-                            🎓 Trainer Mode
-                        </h2>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>
-                            {getAllTrainers().length} trainers from Gen 19-2 to 25-2
-                        </p>
-                        <button 
-                            style={{ ...styles.button, ...styles.buttonPrimary }}
-                            onClick={() => onSelectMode('trainer')}
-                        >
-                            Start Training
-                            <span>→</span>
-                        </button>
-                    </div>
-
-                    <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                        <p>Built with ❤️ for better memory</p>
-                    </div>
+        const HomeScreen = ({ onSelectMode }) => (
+            <div style={styles.container} className="fade-in">
+                <div style={styles.header}>
+                    <img src="/Logokita.png" alt="Logo" style={styles.logo} />
+                    <h1 style={styles.title}>Memory Training</h1>
+                    <p style={styles.subtitle}>Learn and remember names efficiently</p>
                 </div>
-            );
-        };
+                <div style={styles.card}>
+                    <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>👥 Trainee Mode</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>{traineeData.length} trainees from B28 & B29</p>
+                    <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onSelectMode('trainee')}>Start Training <span>→</span></button>
+                </div>
+                <div style={styles.card}>
+                    <h2 style={{ fontSize: '1.125rem', marginBottom: '16px', fontWeight: '600' }}>🎓 Trainer Mode</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '16px' }}>{getAllTrainers().length} trainers from Gen 19-2 to 25-2</p>
+                    <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onSelectMode('trainer')}>Start Training <span>→</span></button>
+                </div>
+                <div style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-muted)', fontSize: '0.75rem' }}><p>Built with ❤️ for better memory</p></div>
+            </div>
+        );
 
         const TraineeSetupScreen = ({ onBack, onStart }) => {
             const [filter, setFilter] = useState('all');
             const [mode, setMode] = useState('multiple');
             const jurusanList = getUniqueJurusan();
-
-            const filteredCount = useMemo(() => {
-                if (filter === 'all') return traineeData.length;
-                return traineeData.filter(t => t.jurusan === filter).length;
-            }, [filter]);
+            const filteredCount = useMemo(() => filter === 'all' ? traineeData.length : traineeData.filter(t => t.jurusan === filter).length, [filter]);
 
             return (
                 <div style={styles.container} className="fade-in">
                     <button style={styles.backButton} onClick={onBack}>← Back to Home</button>
-
                     <div style={styles.card}>
-                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>
-                            👥 Trainee Training Setup
-                        </h2>
-
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>👥 Trainee Training Setup</h2>
                         <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                                Filter by Major
-                            </label>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Filter by Major</label>
                             <select style={styles.select} value={filter} onChange={(e) => setFilter(e.target.value)}>
                                 <option value="all">All Majors ({traineeData.length})</option>
-                                {jurusanList.map(j => (
-                                    <option key={j} value={j}>{j} ({traineeData.filter(t => t.jurusan === j).length})</option>
-                                ))}
+                                {jurusanList.map(j => <option key={j} value={j}>{j} ({traineeData.filter(t => t.jurusan === j).length})</option>)}
                             </select>
                         </div>
-
                         <div style={{ marginBottom: '20px' }}>
-                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                                Quiz Mode
-                            </label>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Quiz Mode</label>
                             <div style={styles.grid}>
-                                {[
-                                    { id: 'multiple', label: 'Multiple Choice', desc: 'Pick from 4 options' },
-                                    { id: 'spelling', label: 'Spelling Mode', desc: 'Type full name' },
-                                ].map(m => (
-                                    <button
-                                        key={m.id}
-                                        style={{
-                                            ...styles.optionButton,
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                            borderColor: mode === m.id ? 'var(--accent)' : 'var(--border)',
-                                            background: mode === m.id ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
-                                        }}
-                                        onClick={() => setMode(m.id)}
-                                    >
+                                {[{ id: 'multiple', label: 'Multiple Choice', desc: 'Pick from 4 options' }, { id: 'spelling', label: 'Spelling Mode', desc: 'Type full name' }].map(m => (
+                                    <button key={m.id} style={{ ...styles.optionButton, flexDirection: 'column', alignItems: 'flex-start', borderColor: mode === m.id ? 'var(--accent)' : 'var(--border)', background: mode === m.id ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)' }} onClick={() => setMode(m.id)}>
                                         <div style={{ fontWeight: '500' }}>{m.label}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{m.desc}</div>
                                     </button>
                                 ))}
                             </div>
                         </div>
-
-                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}>
-                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>📊 {filteredCount} trainees selected</p>
-                        </div>
-
-                        <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onStart({ filter, mode })} disabled={filteredCount === 0}>
-                            Start Quiz <span>→</span>
-                        </button>
+                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}><p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>📊 {filteredCount} trainees selected</p></div>
+                        <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onStart({ filter, mode })} disabled={filteredCount === 0}>Start Quiz <span>→</span></button>
                     </div>
                 </div>
             );
@@ -639,11 +343,7 @@
             const [filterType, setFilterType] = useState('generation');
             const [mode, setMode] = useState('multiple');
             
-            const generations = Object.keys(trainerData).sort((a, b) => {
-                const [aYear, aSem] = a.split('-').map(Number);
-                const [bYear, bSem] = b.split('-').map(Number);
-                return bYear - aYear || bSem - aSem;
-            });
+            const generations = Object.keys(trainerData).sort((a, b) => { const [aY, aS] = a.split('-').map(Number); const [bY, bS] = b.split('-').map(Number); return bY - aY || bS - aS; });
             const positions = getUniquePositions();
             const subjects = Object.keys(subjectMapping);
 
@@ -659,85 +359,47 @@
             return (
                 <div style={styles.container} className="fade-in">
                     <button style={styles.backButton} onClick={onBack}>← Back to Home</button>
-
                     <div style={styles.card}>
-                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>
-                            🎓 Trainer Training Setup
-                        </h2>
-
+                        <h2 style={{ fontSize: '1.125rem', marginBottom: '20px', fontWeight: '600' }}>🎓 Trainer Training Setup</h2>
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Filter Type</label>
                             <div style={styles.grid3}>
                                 {['generation', 'position', 'subject'].map(ft => (
-                                    <button
-                                        key={ft}
-                                        style={{
-                                            ...styles.optionButton,
-                                            justifyContent: 'center',
-                                            borderColor: filterType === ft ? 'var(--accent)' : 'var(--border)',
-                                            background: filterType === ft ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
-                                            marginBottom: 0,
-                                        }}
-                                        onClick={() => { setFilterType(ft); setFilter('all'); }}
-                                    >
+                                    <button key={ft} style={{ ...styles.optionButton, justifyContent: 'center', borderColor: filterType === ft ? 'var(--accent)' : 'var(--border)', background: filterType === ft ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)', marginBottom: 0 }} onClick={() => { setFilterType(ft); setFilter('all'); }}>
                                         {ft.charAt(0).toUpperCase() + ft.slice(1)}
                                     </button>
                                 ))}
                             </div>
                         </div>
-
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                                 {filterType === 'generation' ? 'Select Generation' : filterType === 'position' ? 'Select Position' : 'Select Subject'}
                             </label>
                             <select style={styles.select} value={filter} onChange={(e) => setFilter(e.target.value)}>
                                 <option value="all">All ({getAllTrainers().length})</option>
-                                {filterType === 'generation' && generations.map(g => (
-                                    <option key={g} value={g}>Gen {g} ({trainerData[g].length})</option>
-                                ))}
-                                {filterType === 'position' && positions.map(p => (
-                                    <option key={p} value={p}>{p} ({getAllTrainers().filter(t => t.position === p).length})</option>
-                                ))}
-                                {filterType === 'subject' && subjects.map(s => (
-                                    <option key={s} value={s}>{subjectFullNames[s]} ({getTrainersBySubject(s).length})</option>
-                                ))}
+                                {filterType === 'generation' && generations.map(g => <option key={g} value={g}>Gen {g} ({trainerData[g].length})</option>)}
+                                {filterType === 'position' && positions.map(p => <option key={p} value={p}>{p} ({getAllTrainers().filter(t => t.position === p).length})</option>)}
+                                {filterType === 'subject' && subjects.map(s => <option key={s} value={s}>{subjectFullNames[s]} ({getTrainersBySubject(s).length})</option>)}
                             </select>
                         </div>
-
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Quiz Mode</label>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {[
                                     { id: 'multiple', label: 'Multiple Choice', desc: 'Pick name from 4 options' },
                                     { id: 'spelling', label: 'Spelling + Position', desc: 'Type name & guess position' },
+                                    { id: 'hard', label: '🔥 Hard Mode', desc: 'Name + Position + Generation' },
                                     { id: 'subject', label: 'Guess Subject', desc: 'Pick subject from options' },
                                 ].map(m => (
-                                    <button
-                                        key={m.id}
-                                        style={{
-                                            ...styles.optionButton,
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                            borderColor: mode === m.id ? 'var(--accent)' : 'var(--border)',
-                                            background: mode === m.id ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)',
-                                            marginBottom: 0,
-                                        }}
-                                        onClick={() => setMode(m.id)}
-                                    >
+                                    <button key={m.id} style={{ ...styles.optionButton, flexDirection: 'column', alignItems: 'flex-start', borderColor: mode === m.id ? 'var(--accent)' : 'var(--border)', background: mode === m.id ? 'rgba(99, 102, 241, 0.1)' : 'var(--bg-tertiary)', marginBottom: 0 }} onClick={() => setMode(m.id)}>
                                         <div style={{ fontWeight: '500' }}>{m.label}</div>
                                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{m.desc}</div>
                                     </button>
                                 ))}
                             </div>
                         </div>
-
-                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}>
-                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>📊 {filteredTrainers.length} trainers selected</p>
-                        </div>
-
-                        <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onStart({ filter, filterType, mode })} disabled={filteredTrainers.length === 0}>
-                            Start Quiz <span>→</span>
-                        </button>
+                        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', marginBottom: '20px' }}><p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>📊 {filteredTrainers.length} trainers selected</p></div>
+                        <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={() => onStart({ filter, filterType, mode })} disabled={filteredTrainers.length === 0}>Start Quiz <span>→</span></button>
                     </div>
                 </div>
             );
@@ -752,11 +414,17 @@
             const [textAnswer, setTextAnswer] = useState('');
             const [showHint, setShowHint] = useState(false);
             const [hintLevel, setHintLevel] = useState(0);
-            const [nameCorrect, setNameCorrect] = useState(null);
-            const [positionCorrect, setPositionCorrect] = useState(null);
-            const [selectedPosition, setSelectedPosition] = useState(null);
-            const [nameSubmitted, setNameSubmitted] = useState(false);
             const [progress, setProgress] = useState([]);
+            
+            // For spelling + position mode
+            const [selectedPosition, setSelectedPosition] = useState(null);
+            
+            // For hard mode
+            const [genYear, setGenYear] = useState('');
+            const [genSem, setGenSem] = useState('');
+            
+            // Results tracking
+            const [results, setResults] = useState({ name: null, position: null, generation: null });
 
             useEffect(() => {
                 let data = [];
@@ -784,8 +452,7 @@
                         options = shuffleArray([person.name, ...shuffleArray(otherPeople).slice(0, 3).map(p => p.name)]);
                     }
                     
-                    // Position options for spelling mode (trainer only)
-                    if (type === 'trainer' && config.mode === 'spelling') {
+                    if (type === 'trainer' && (config.mode === 'spelling' || config.mode === 'hard')) {
                         const allPositions = getUniquePositions();
                         const wrongPositions = allPositions.filter(p => p !== person.position);
                         positionOptions = shuffleArray([person.position, ...shuffleArray(wrongPositions).slice(0, 3)]);
@@ -822,68 +489,56 @@
                 
                 setSelectedAnswer(answer);
                 setAnswered(true);
-                setNameCorrect(correct);
+                setResults({ name: correct });
                 
-                if (correct) setScore(s => s + (hintLevel === 0 ? 10 : Math.max(1, 10 - hintLevel * 3)));
-                
-                setProgress(prev => {
-                    const newProgress = [...prev];
-                    newProgress[currentIndex] = correct;
-                    return newProgress;
-                });
+                if (correct) setScore(s => s + 10);
+                setProgress(prev => { const np = [...prev]; np[currentIndex] = correct; return np; });
             };
 
-            const handleNameSubmit = (e) => {
+            const handleSpellingSubmit = (e) => {
                 e.preventDefault();
-                if (nameSubmitted) return;
+                if (answered) return;
                 
-                const userAnswer = normalizeText(textAnswer);
-                const correctAnswer = normalizeText(currentQuestion.name);
-                const correct = userAnswer === correctAnswer;
+                // For trainee - just check name
+                if (type === 'trainee') {
+                    const nameCorrect = normalizeText(textAnswer) === normalizeText(currentQuestion.name);
+                    setAnswered(true);
+                    setResults({ name: nameCorrect });
+                    if (nameCorrect) setScore(s => s + 15);
+                    setProgress(prev => { const np = [...prev]; np[currentIndex] = nameCorrect; return np; });
+                    return;
+                }
                 
-                setNameSubmitted(true);
-                setNameCorrect(correct);
+                // For trainer spelling mode - check name AND position
+                if (config.mode === 'spelling') {
+                    if (!selectedPosition) return; // Must select position
+                    
+                    const nameCorrect = normalizeText(textAnswer) === normalizeText(currentQuestion.name);
+                    const positionCorrect = selectedPosition === currentQuestion.position;
+                    const allCorrect = nameCorrect && positionCorrect;
+                    
+                    setAnswered(true);
+                    setResults({ name: nameCorrect, position: positionCorrect });
+                    if (allCorrect) setScore(s => s + 15);
+                    setProgress(prev => { const np = [...prev]; np[currentIndex] = allCorrect; return np; });
+                    return;
+                }
                 
-                if (correct) setScore(s => s + (hintLevel === 0 ? 10 : Math.max(1, 10 - hintLevel * 3)));
-            };
-
-            const handlePositionSelect = (position) => {
-                if (positionCorrect !== null) return;
-                
-                const correct = position === currentQuestion.position;
-                setSelectedPosition(position);
-                setPositionCorrect(correct);
-                
-                if (correct) setScore(s => s + 5);
-                
-                // Mark as fully answered when position is selected
-                setAnswered(true);
-                setProgress(prev => {
-                    const newProgress = [...prev];
-                    // Consider it correct if either name or position is correct
-                    newProgress[currentIndex] = nameCorrect || correct;
-                    return newProgress;
-                });
-            };
-
-            const handleTraineeSpellingSubmit = (e) => {
-                e.preventDefault();
-                if (answered || !textAnswer.trim()) return;
-                
-                const userAnswer = normalizeText(textAnswer);
-                const correctAnswer = normalizeText(currentQuestion.name);
-                const correct = userAnswer === correctAnswer;
-                
-                setAnswered(true);
-                setNameCorrect(correct);
-                
-                if (correct) setScore(s => s + (hintLevel === 0 ? 15 : Math.max(1, 15 - hintLevel * 4)));
-                
-                setProgress(prev => {
-                    const newProgress = [...prev];
-                    newProgress[currentIndex] = correct;
-                    return newProgress;
-                });
+                // For hard mode - check name, position, AND generation
+                if (config.mode === 'hard') {
+                    if (!selectedPosition || !genYear || !genSem) return; // Must fill all
+                    
+                    const nameCorrect = normalizeText(textAnswer) === normalizeText(currentQuestion.name);
+                    const positionCorrect = selectedPosition === currentQuestion.position;
+                    const userGen = `${genYear}-${genSem}`;
+                    const genCorrect = userGen === currentQuestion.generation;
+                    const allCorrect = nameCorrect && positionCorrect && genCorrect;
+                    
+                    setAnswered(true);
+                    setResults({ name: nameCorrect, position: positionCorrect, generation: genCorrect });
+                    if (allCorrect) setScore(s => s + 20);
+                    setProgress(prev => { const np = [...prev]; np[currentIndex] = allCorrect; return np; });
+                }
             };
 
             const handleNext = () => {
@@ -894,28 +549,29 @@
                     setTextAnswer('');
                     setShowHint(false);
                     setHintLevel(0);
-                    setNameCorrect(null);
-                    setPositionCorrect(null);
                     setSelectedPosition(null);
-                    setNameSubmitted(false);
+                    setGenYear('');
+                    setGenSem('');
+                    setResults({ name: null, position: null, generation: null });
                 } else {
                     onComplete({ score, total: questions.length, progress });
                 }
             };
 
-            const handleShowHint = () => {
-                if (hintLevel < 3) {
-                    setHintLevel(h => h + 1);
-                    setShowHint(true);
-                }
-            };
+            const handleShowHint = () => { if (hintLevel < 3) { setHintLevel(h => h + 1); setShowHint(true); } };
 
-            if (questions.length === 0) {
-                return <div style={styles.container}><p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</p></div>;
-            }
+            if (questions.length === 0) return <div style={styles.container}><p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</p></div>;
 
             const progressPercent = ((currentIndex + (answered ? 1 : 0)) / questions.length) * 100;
             const isTrainerSpelling = type === 'trainer' && config.mode === 'spelling';
+            const isHardMode = type === 'trainer' && config.mode === 'hard';
+
+            // Check if submit should be enabled
+            const canSubmit = () => {
+                if (isHardMode) return textAnswer.trim() && selectedPosition && genYear && genSem;
+                if (isTrainerSpelling) return textAnswer.trim() && selectedPosition;
+                return textAnswer.trim();
+            };
 
             return (
                 <div style={styles.container} className="fade-in">
@@ -932,26 +588,31 @@
                         </div>
                     </div>
 
-                    <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: `${progressPercent}%` }} />
-                    </div>
+                    <div style={styles.progressBar}><div style={{ ...styles.progressFill, width: `${progressPercent}%` }} /></div>
 
                     <div style={{ display: 'flex', gap: '3px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                        {progress.map((p, i) => (
-                            <div key={i} style={{ width: '8px', height: '8px', borderRadius: '2px', background: p === null ? 'var(--bg-tertiary)' : p ? 'var(--success)' : 'var(--error)' }} />
-                        ))}
+                        {progress.map((p, i) => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '2px', background: p === null ? 'var(--bg-tertiary)' : p ? 'var(--success)' : 'var(--error)' }} />)}
                     </div>
 
-                    <div style={styles.card} className={nameCorrect === false || positionCorrect === false ? 'shake' : ''}>
+                    <div style={styles.card} className={answered && !progress[currentIndex] ? 'shake' : ''}>
                         <img src={currentQuestion.img} alt="Person" style={styles.personImage} onError={(e) => { e.target.src = '/Logokita.png'; }} />
 
-                        {type === 'trainer' && (
+                        {/* Tags display */}
+                        {type === 'trainer' && !isHardMode && (
                             <div style={{ textAlign: 'center', marginBottom: '12px' }}>
                                 <span style={styles.tag}>Gen {currentQuestion.generation}</span>
                                 <span style={styles.tag}>{currentQuestion.initial}</span>
                             </div>
                         )}
 
+                        {/* Hard mode: censored initial, no generation */}
+                        {isHardMode && (
+                            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                                <span style={{ ...styles.tag, fontFamily: "'JetBrains Mono', monospace" }}>{censorInitial(currentQuestion.initial)}</span>
+                            </div>
+                        )}
+
+                        {/* Subject tags */}
                         {type === 'trainer' && currentQuestion.subjects && currentQuestion.subjects.length > 0 && config.mode !== 'subject' && (
                             <div style={{ textAlign: 'center', marginBottom: '12px' }}>
                                 {currentQuestion.subjects.map(s => <span key={s} style={styles.tagSubject}>{s}</span>)}
@@ -966,6 +627,7 @@
                             </div>
                         )}
 
+                        {/* Subject guess mode header */}
                         {config.mode === 'subject' && (
                             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                                 <p style={{ fontSize: '1.125rem', fontWeight: '600' }}>{currentQuestion.name}</p>
@@ -973,9 +635,8 @@
                             </div>
                         )}
 
-                        {config.mode !== 'subject' && !isTrainerSpelling && (
-                            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '16px' }}>Who is this person?</p>
-                        )}
+                        {/* Question text for simple modes */}
+                        {config.mode === 'multiple' && <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '16px' }}>Who is this person?</p>}
 
                         {/* Multiple Choice Mode */}
                         {config.mode === 'multiple' && (
@@ -990,9 +651,7 @@
                                     }
                                     return (
                                         <button key={idx} style={buttonStyle} onClick={() => handleMultipleChoice(option)} disabled={answered}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '12px', fontSize: '0.75rem', fontWeight: '600', flexShrink: 0 }}>
-                                                {String.fromCharCode(65 + idx)}
-                                            </span>
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '12px', fontSize: '0.75rem', fontWeight: '600', flexShrink: 0 }}>{String.fromCharCode(65 + idx)}</span>
                                             <span style={{ wordBreak: 'break-word' }}>{option}</span>
                                         </button>
                                     );
@@ -1013,9 +672,7 @@
                                     }
                                     return (
                                         <button key={idx} style={buttonStyle} onClick={() => handleMultipleChoice(option)} disabled={answered}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '12px', fontSize: '0.75rem', fontWeight: '600', flexShrink: 0 }}>
-                                                {String.fromCharCode(65 + idx)}
-                                            </span>
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '12px', fontSize: '0.75rem', fontWeight: '600', flexShrink: 0 }}>{String.fromCharCode(65 + idx)}</span>
                                             <span>{subjectFullNames[option]}</span>
                                         </button>
                                     );
@@ -1025,23 +682,13 @@
 
                         {/* Trainee Spelling Mode */}
                         {type === 'trainee' && config.mode === 'spelling' && (
-                            <form onSubmit={handleTraineeSpellingSubmit}>
-                                <input
-                                    type="text"
-                                    style={{ ...styles.input, borderColor: answered ? (nameCorrect ? 'var(--success)' : 'var(--error)') : 'var(--border)', marginBottom: '12px' }}
-                                    placeholder="Type the full name..."
-                                    value={textAnswer}
-                                    onChange={(e) => setTextAnswer(e.target.value)}
-                                    disabled={answered}
-                                    autoComplete="off"
-                                    autoCapitalize="words"
-                                />
-                                {!answered && (
-                                    <button type="submit" style={{ ...styles.button, ...styles.buttonPrimary }}>Submit Answer</button>
-                                )}
-                                {answered && !nameCorrect && (
-                                    <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', marginBottom: '12px' }}>
-                                        <p style={{ color: 'var(--error)', fontSize: '0.875rem' }}>Correct answer: <strong>{currentQuestion.name}</strong></p>
+                            <form onSubmit={handleSpellingSubmit}>
+                                <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '12px' }}>Who is this person?</p>
+                                <input type="text" style={{ ...styles.input, borderColor: answered ? (results.name ? 'var(--success)' : 'var(--error)') : 'var(--border)', marginBottom: '12px' }} placeholder="Type the full name..." value={textAnswer} onChange={(e) => setTextAnswer(e.target.value)} disabled={answered} autoComplete="off" autoCapitalize="words" />
+                                {!answered && <button type="submit" style={{ ...styles.button, ...styles.buttonPrimary }} disabled={!textAnswer.trim()}>Submit Answer</button>}
+                                {answered && !results.name && (
+                                    <div style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>
+                                        <p style={{ color: 'var(--error)', fontSize: '0.875rem' }}>Correct: <strong>{currentQuestion.name}</strong></p>
                                     </div>
                                 )}
                             </form>
@@ -1049,116 +696,152 @@
 
                         {/* Trainer Spelling + Position Mode */}
                         {isTrainerSpelling && (
-                            <div>
-                                {/* Name Input Section */}
+                            <form onSubmit={handleSpellingSubmit}>
                                 <div style={styles.sectionLabel}>📝 Type the Name</div>
-                                <form onSubmit={handleNameSubmit}>
-                                    <input
-                                        type="text"
-                                        style={{ ...styles.input, borderColor: nameSubmitted ? (nameCorrect ? 'var(--success)' : 'var(--error)') : 'var(--border)', marginBottom: '12px' }}
-                                        placeholder="Type the full name..."
-                                        value={textAnswer}
-                                        onChange={(e) => setTextAnswer(e.target.value)}
-                                        disabled={nameSubmitted}
-                                        autoComplete="off"
-                                        autoCapitalize="words"
-                                    />
-                                    {!nameSubmitted && (
-                                        <button type="submit" style={{ ...styles.button, ...styles.buttonPrimary, marginBottom: '0' }}>
-                                            Submit Name
-                                        </button>
-                                    )}
-                                </form>
-                                
-                                {nameSubmitted && (
-                                    <div style={{ padding: '10px 12px', background: nameCorrect ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', marginBottom: '8px' }}>
-                                        <span style={{ fontSize: '0.875rem' }}>
-                                            {nameCorrect ? (
-                                                <span style={{ color: 'var(--success)' }}>✅ Name correct! (+{hintLevel === 0 ? 10 : Math.max(1, 10 - hintLevel * 3)} pts)</span>
-                                            ) : (
-                                                <span style={{ color: 'var(--error)' }}>❌ Correct: <strong>{currentQuestion.name}</strong></span>
-                                            )}
-                                        </span>
-                                    </div>
-                                )}
+                                <input type="text" style={{ ...styles.input, borderColor: answered ? (results.name ? 'var(--success)' : 'var(--error)') : 'var(--border)', marginBottom: '16px' }} placeholder="Type the full name..." value={textAnswer} onChange={(e) => setTextAnswer(e.target.value)} disabled={answered} autoComplete="off" autoCapitalize="words" />
 
-                                <div style={styles.divider} />
-
-                                {/* Position Selection Section */}
-                                <div style={styles.sectionLabel}>💼 Guess the Position</div>
-                                <div>
+                                <div style={styles.sectionLabel}>💼 Select Position</div>
+                                <div style={{ marginBottom: '16px' }}>
                                     {currentQuestion.positionOptions && currentQuestion.positionOptions.map((pos, idx) => {
                                         const isOptionCorrect = pos === currentQuestion.position;
                                         const isSelected = selectedPosition === pos;
                                         let buttonStyle = { ...styles.optionButton, padding: '12px 14px', fontSize: '0.8125rem' };
-                                        if (positionCorrect !== null) {
+                                        if (answered) {
                                             if (isOptionCorrect) buttonStyle = { ...buttonStyle, borderColor: 'var(--success)', background: 'rgba(34, 197, 94, 0.1)' };
-                                            else if (isSelected) buttonStyle = { ...buttonStyle, borderColor: 'var(--error)', background: 'rgba(239, 68, 68, 0.1)' };
+                                            else if (isSelected && !isOptionCorrect) buttonStyle = { ...buttonStyle, borderColor: 'var(--error)', background: 'rgba(239, 68, 68, 0.1)' };
+                                        } else if (isSelected) {
+                                            buttonStyle = { ...buttonStyle, borderColor: 'var(--accent)', background: 'rgba(99, 102, 241, 0.1)' };
                                         }
                                         return (
-                                            <button key={idx} style={buttonStyle} onClick={() => handlePositionSelect(pos)} disabled={positionCorrect !== null}>
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '10px', fontSize: '0.7rem', fontWeight: '600', flexShrink: 0 }}>
-                                                    {String.fromCharCode(65 + idx)}
-                                                </span>
+                                            <button key={idx} type="button" style={buttonStyle} onClick={() => !answered && setSelectedPosition(pos)} disabled={answered}>
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '10px', fontSize: '0.7rem', fontWeight: '600', flexShrink: 0 }}>{String.fromCharCode(65 + idx)}</span>
                                                 <span style={{ wordBreak: 'break-word' }}>{pos}</span>
                                             </button>
                                         );
                                     })}
                                 </div>
 
-                                {positionCorrect !== null && (
-                                    <div style={{ padding: '10px 12px', background: positionCorrect ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', marginTop: '8px' }}>
-                                        <span style={{ fontSize: '0.875rem' }}>
-                                            {positionCorrect ? (
-                                                <span style={{ color: 'var(--success)' }}>✅ Position correct! (+5 pts)</span>
-                                            ) : (
-                                                <span style={{ color: 'var(--error)' }}>❌ Position was: <strong>{currentQuestion.position}</strong></span>
-                                            )}
-                                        </span>
+                                {!answered && <button type="submit" style={{ ...styles.button, ...styles.buttonPrimary }} disabled={!canSubmit()}>Submit All Answers</button>}
+
+                                {answered && (
+                                    <div style={{ marginTop: '12px' }}>
+                                        <div style={{ ...styles.feedbackItem, background: results.name ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                                            <span>{results.name ? '✅' : '❌'}</span>
+                                            <span style={{ color: results.name ? 'var(--success)' : 'var(--error)' }}>
+                                                Name: {results.name ? 'Correct' : <><span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{textAnswer}</span> → <strong>{currentQuestion.name}</strong></>}
+                                            </span>
+                                        </div>
+                                        <div style={{ ...styles.feedbackItem, background: results.position ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                                            <span>{results.position ? '✅' : '❌'}</span>
+                                            <span style={{ color: results.position ? 'var(--success)' : 'var(--error)' }}>
+                                                Position: {results.position ? 'Correct' : <><span style={{ textDecoration: 'line-through', opacity: 0.6, fontSize: '0.8rem' }}>{selectedPosition}</span> → <strong style={{ fontSize: '0.8rem' }}>{currentQuestion.position}</strong></>}
+                                            </span>
+                                        </div>
+                                        <div style={{ textAlign: 'center', marginTop: '12px', padding: '10px', background: progress[currentIndex] ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)', borderRadius: '8px' }}>
+                                            <span style={{ fontSize: '1.25rem', marginRight: '8px' }}>{progress[currentIndex] ? '🎉' : '😢'}</span>
+                                            <span style={{ fontWeight: '600', color: progress[currentIndex] ? 'var(--success)' : 'var(--error)' }}>
+                                                {progress[currentIndex] ? 'Perfect! +15 points' : 'Not quite - both must be correct'}
+                                            </span>
+                                        </div>
                                     </div>
                                 )}
-                            </div>
+                            </form>
+                        )}
+
+                        {/* Hard Mode */}
+                        {isHardMode && (
+                            <form onSubmit={handleSpellingSubmit}>
+                                <div style={styles.sectionLabel}>📝 Type the Name</div>
+                                <input type="text" style={{ ...styles.input, borderColor: answered ? (results.name ? 'var(--success)' : 'var(--error)') : 'var(--border)', marginBottom: '16px' }} placeholder="Type the full name..." value={textAnswer} onChange={(e) => setTextAnswer(e.target.value)} disabled={answered} autoComplete="off" autoCapitalize="words" />
+
+                                <div style={styles.sectionLabel}>💼 Select Position</div>
+                                <div style={{ marginBottom: '16px' }}>
+                                    {currentQuestion.positionOptions && currentQuestion.positionOptions.map((pos, idx) => {
+                                        const isOptionCorrect = pos === currentQuestion.position;
+                                        const isSelected = selectedPosition === pos;
+                                        let buttonStyle = { ...styles.optionButton, padding: '12px 14px', fontSize: '0.8125rem' };
+                                        if (answered) {
+                                            if (isOptionCorrect) buttonStyle = { ...buttonStyle, borderColor: 'var(--success)', background: 'rgba(34, 197, 94, 0.1)' };
+                                            else if (isSelected && !isOptionCorrect) buttonStyle = { ...buttonStyle, borderColor: 'var(--error)', background: 'rgba(239, 68, 68, 0.1)' };
+                                        } else if (isSelected) {
+                                            buttonStyle = { ...buttonStyle, borderColor: 'var(--accent)', background: 'rgba(99, 102, 241, 0.1)' };
+                                        }
+                                        return (
+                                            <button key={idx} type="button" style={buttonStyle} onClick={() => !answered && setSelectedPosition(pos)} disabled={answered}>
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '22px', height: '22px', borderRadius: '6px', background: 'var(--bg-primary)', marginRight: '10px', fontSize: '0.7rem', fontWeight: '600', flexShrink: 0 }}>{String.fromCharCode(65 + idx)}</span>
+                                                <span style={{ wordBreak: 'break-word' }}>{pos}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <div style={styles.sectionLabel}>📅 Guess Generation</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                                    <input type="text" style={{ ...styles.inputSmall, borderColor: answered ? (results.generation ? 'var(--success)' : 'var(--error)') : 'var(--border)' }} placeholder="YY" maxLength={2} value={genYear} onChange={(e) => setGenYear(e.target.value.replace(/\D/g, ''))} disabled={answered} />
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '1.25rem', fontFamily: "'JetBrains Mono', monospace" }}>-</span>
+                                    <input type="text" style={{ ...styles.inputSmall, width: '40px', borderColor: answered ? (results.generation ? 'var(--success)' : 'var(--error)') : 'var(--border)' }} placeholder="S" maxLength={1} value={genSem} onChange={(e) => setGenSem(e.target.value.replace(/\D/g, ''))} disabled={answered} />
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8125rem', marginLeft: '8px' }}>(e.g., 24-1)</span>
+                                </div>
+
+                                {!answered && <button type="submit" style={{ ...styles.button, ...styles.buttonPrimary }} disabled={!canSubmit()}>Submit All Answers</button>}
+
+                                {answered && (
+                                    <div style={{ marginTop: '12px' }}>
+                                        <div style={{ ...styles.feedbackItem, background: results.name ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                                            <span>{results.name ? '✅' : '❌'}</span>
+                                            <span style={{ color: results.name ? 'var(--success)' : 'var(--error)' }}>
+                                                Name: {results.name ? 'Correct' : <><span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{textAnswer}</span> → <strong>{currentQuestion.name}</strong></>}
+                                            </span>
+                                        </div>
+                                        <div style={{ ...styles.feedbackItem, background: results.position ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                                            <span>{results.position ? '✅' : '❌'}</span>
+                                            <span style={{ color: results.position ? 'var(--success)' : 'var(--error)', fontSize: '0.8rem' }}>
+                                                Position: {results.position ? 'Correct' : <><span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{selectedPosition}</span> → <strong>{currentQuestion.position}</strong></>}
+                                            </span>
+                                        </div>
+                                        <div style={{ ...styles.feedbackItem, background: results.generation ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
+                                            <span>{results.generation ? '✅' : '❌'}</span>
+                                            <span style={{ color: results.generation ? 'var(--success)' : 'var(--error)' }}>
+                                                Generation: {results.generation ? 'Correct' : <><span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{genYear}-{genSem}</span> → <strong>{currentQuestion.generation}</strong></>}
+                                            </span>
+                                        </div>
+                                        <div style={{ textAlign: 'center', marginTop: '12px', padding: '10px', background: progress[currentIndex] ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)', borderRadius: '8px' }}>
+                                            <span style={{ fontSize: '1.25rem', marginRight: '8px' }}>{progress[currentIndex] ? '🔥' : '😢'}</span>
+                                            <span style={{ fontWeight: '600', color: progress[currentIndex] ? 'var(--success)' : 'var(--error)' }}>
+                                                {progress[currentIndex] ? 'Perfect! +20 points' : 'Not quite - all must be correct'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
                         )}
 
                         {/* Hint System */}
-                        {!answered && !isTrainerSpelling && config.mode !== 'subject' && (
+                        {!answered && (config.mode === 'spelling' || config.mode === 'hard' || (type === 'trainee' && config.mode === 'spelling')) && (
                             <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                                <button style={styles.hintButton} onClick={handleShowHint} disabled={hintLevel >= 3}>
-                                    💡 Get Hint ({3 - hintLevel} left)
-                                </button>
+                                <button type="button" style={styles.hintButton} onClick={handleShowHint} disabled={hintLevel >= 3}>💡 Get Hint ({3 - hintLevel} left)</button>
                                 {showHint && <div style={styles.hintText}>{generateHint(currentQuestion.name, hintLevel)}</div>}
                             </div>
                         )}
 
-                        {/* Hint for Trainer Spelling (only for name part) */}
-                        {isTrainerSpelling && !nameSubmitted && (
-                            <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                                <button style={styles.hintButton} onClick={handleShowHint} disabled={hintLevel >= 3}>
-                                    💡 Get Hint ({3 - hintLevel} left)
-                                </button>
-                                {showHint && <div style={styles.hintText}>{generateHint(currentQuestion.name, hintLevel)}</div>}
-                            </div>
-                        )}
-
-                        {/* Next Button */}
-                        {answered && (
+                        {/* Next Button for multiple choice and subject modes */}
+                        {answered && (config.mode === 'multiple' || config.mode === 'subject') && (
                             <div style={{ marginTop: '16px' }}>
-                                {!isTrainerSpelling && (
-                                    <div style={{ textAlign: 'center', marginBottom: '16px', padding: '12px', background: nameCorrect ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>
-                                        <span style={{ fontSize: '1.5rem', marginRight: '8px' }}>{nameCorrect ? '✅' : '❌'}</span>
-                                        <span style={{ color: nameCorrect ? 'var(--success)' : 'var(--error)', fontWeight: '600' }}>
-                                            {nameCorrect ? 'Correct!' : 'Incorrect'}
-                                        </span>
-                                        {config.mode === 'subject' && !nameCorrect && currentQuestion.subjects.length > 0 && (
-                                            <div style={{ marginTop: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                                                Correct: {currentQuestion.subjects.map(s => subjectFullNames[s]).join(', ')}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={handleNext}>
-                                    {currentIndex < questions.length - 1 ? 'Next Question' : 'See Results'} <span>→</span>
-                                </button>
+                                <div style={{ textAlign: 'center', marginBottom: '16px', padding: '12px', background: results.name ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>
+                                    <span style={{ fontSize: '1.5rem', marginRight: '8px' }}>{results.name ? '✅' : '❌'}</span>
+                                    <span style={{ color: results.name ? 'var(--success)' : 'var(--error)', fontWeight: '600' }}>{results.name ? 'Correct!' : 'Incorrect'}</span>
+                                    {config.mode === 'subject' && !results.name && currentQuestion.subjects.length > 0 && (
+                                        <div style={{ marginTop: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Correct: {currentQuestion.subjects.map(s => subjectFullNames[s]).join(', ')}</div>
+                                    )}
+                                </div>
+                                <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={handleNext}>{currentIndex < questions.length - 1 ? 'Next Question' : 'See Results'} <span>→</span></button>
+                            </div>
+                        )}
+
+                        {/* Next Button for spelling modes */}
+                        {answered && (isTrainerSpelling || isHardMode || (type === 'trainee' && config.mode === 'spelling')) && (
+                            <div style={{ marginTop: '16px' }}>
+                                <button style={{ ...styles.button, ...styles.buttonPrimary }} onClick={handleNext}>{currentIndex < questions.length - 1 ? 'Next Question' : 'See Results'} <span>→</span></button>
                             </div>
                         )}
                     </div>
@@ -1182,7 +865,6 @@
                         <div style={styles.resultIcon}>{emoji}</div>
                         <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '8px' }}>Quiz Complete!</h2>
                         <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>{message}</p>
-
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
                             <div style={{ padding: '16px', background: 'var(--bg-tertiary)', borderRadius: '12px' }}>
                                 <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--accent)', fontFamily: "'JetBrains Mono', monospace" }}>{results.score}</div>
@@ -1197,19 +879,11 @@
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>ACCURACY</div>
                             </div>
                         </div>
-
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'center', marginBottom: '24px' }}>
-                            {results.progress.map((p, i) => (
-                                <div key={i} style={{ width: '12px', height: '12px', borderRadius: '3px', background: p ? 'var(--success)' : 'var(--error)' }} title={`Question ${i + 1}: ${p ? 'Correct' : 'Incorrect'}`} />
-                            ))}
+                            {results.progress.map((p, i) => <div key={i} style={{ width: '12px', height: '12px', borderRadius: '3px', background: p ? 'var(--success)' : 'var(--error)' }} title={`Question ${i + 1}: ${p ? 'Correct' : 'Incorrect'}`} />)}
                         </div>
-
-                        <button style={{ ...styles.button, ...styles.buttonPrimary, marginBottom: '8px' }} onClick={onRestart}>
-                            Try Again <span>🔄</span>
-                        </button>
-                        <button style={styles.button} onClick={onHome}>
-                            Back to Home <span>🏠</span>
-                        </button>
+                        <button style={{ ...styles.button, ...styles.buttonPrimary, marginBottom: '8px' }} onClick={onRestart}>Try Again <span>🔄</span></button>
+                        <button style={styles.button} onClick={onHome}>Back to Home <span>🏠</span></button>
                     </div>
                 </div>
             );
